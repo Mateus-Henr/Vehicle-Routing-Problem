@@ -1,7 +1,17 @@
 # Vehicle Routing Problem
-> Practical Work 02 – Vehicle Routing Problem
+> Practical Work 02 – Vehicle Routing Problem<br/>
 The objective of this is to allow an evaluation of the impact caused by the performance of the algorithms in their real execution. This algorithm specifically requires brute force implementation.
+
+
 # Colaborators
+
+## Mateus Henrique
+Name: Mateus Henrique Vieira Figueiredo
+
+GitHub: [Mateus-Henr](https://github.com/Mateus-Henr)
+
+University: [UFV-Florestal](https://www.novoscursos.ufv.br/graduacao/caf/ccp/www/)
+
 ## João Victor
 Name: João Victor Graciano Belfort de Andrade
 
@@ -16,14 +26,8 @@ GitHub: [Vith-MCB](https://github.com/Vith-MCB)
 
 University: [UFV-Florestal](https://www.novoscursos.ufv.br/graduacao/caf/ccp/www/)
 
-## Mateus Henrique
-Name: Mateus Henrique Vieira Figueiredo
 
-GitHub: [Mateus-Henr](https://github.com/Mateus-Henr)
-
-University: [UFV-Florestal](https://www.novoscursos.ufv.br/graduacao/caf/ccp/www/)
-
-## Files:
+### Files:
 ### Folder "src":
 * permutacao.c
 * main.c
