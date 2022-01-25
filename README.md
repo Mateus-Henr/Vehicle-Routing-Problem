@@ -4,7 +4,7 @@ The objective of this is to allow an evaluation of the impact caused by the perf
 
 <br/>
 
-# Colaborators
+# Collaborators
 
 ## Mateus Henrique
 Name: Mateus Henrique Vieira Figueiredo
