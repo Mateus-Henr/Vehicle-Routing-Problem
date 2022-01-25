@@ -1,4 +1,4 @@
-# Lista-Linear-OS
+# Vehicle Routing Problem
 > Practical Work 02 – Vehicle Routing Problem
 The objective of this is to allow an evaluation of the impact caused by the performance of the algorithms in their real execution. This algorithm specifically requires brute force implementation.
 # Colaborators
