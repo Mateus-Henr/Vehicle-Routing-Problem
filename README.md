@@ -2,6 +2,7 @@
 > Practical Work 02 – Vehicle Routing Problem<br/>
 The objective of this is to allow an evaluation of the impact caused by the performance of the algorithms in their real execution. This algorithm specifically requires brute force implementation.
 
+<br/>
 
 # Colaborators
 
@@ -26,6 +27,7 @@ GitHub: [Vith-MCB](https://github.com/Vith-MCB)
 
 University: [UFV-Florestal](https://www.novoscursos.ufv.br/graduacao/caf/ccp/www/)
 
+<br/>
 
 # Files:
 ### Folder "src":
