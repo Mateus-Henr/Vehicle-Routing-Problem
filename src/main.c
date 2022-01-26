@@ -2,7 +2,13 @@
 #include <stddef.h>
 #include <time.h>
 
-#define PATH_ARQUIVO "..//arquivos//text.txt" // Varia conforme o sistema operacional.
+// Varia conforme o sistema operacional.
+#if defined WIN32 || defined _WIN32 || defined __CYGWIN__
+#define PATH_ARQUIVO "..\\arquivos\\text.txt"
+#else
+#define PATH_ARQUIVO "../arquivos/text.txt" // Edit this one if your OS is not Windows.
+#endif
+
 #define ERRO_ABRIR_ARQUIVO "Erro ao tentar abrir o arquivo.\n"
 #define ERRO (-1)
 #define ZERO 0
@@ -11,10 +17,15 @@
 
 double inicializaClock(void);
 
-double finalizaClock(double tempoInicial);
+double calculaTempo(double tempoInicial);
 
 
-int main()
+/*
+ * A função principal. Tem como função a leitura de informações de um arquivo e manipulação dos dados.
+ *
+ * @return          0 se executado com sucesso, -1 se occorrer algum erro.
+ */
+int main(void)
 {
     // Inicializando ponteiro do arquivo.
     FILE *pArquivo = NULL;
@@ -76,6 +87,8 @@ int main()
 
 /*
  * Função usada para iniciar o clock.
+ *
+ * @return              valor de quando a função "clock()" é chamada.
  */
 double inicializaClock(void)
 {
@@ -85,8 +98,11 @@ double inicializaClock(void)
 
 /*
  * Função usada para finalizar o clock e calcular o tempo total.
+ *
+ * @param    tempoInicial    valor da primeira vez que a função "clock()" foi chamada.
+ * @return                   valor calculado referente ao tempo entre o tempo inicial e o tempo final.
  */
-double finalizaClock(double tempoInicial)
+double calculaTempo(double tempoInicial)
 {
     return (double) (clock() - tempoInicial) / CLOCKS_PER_SEC;
 }
