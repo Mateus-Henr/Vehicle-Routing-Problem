@@ -31,6 +31,7 @@ University: [UFV-Florestal](https://www.novoscursos.ufv.br/graduacao/caf/ccp/www
 
 # Files:
 ### Folder "src":
+* permutacao.h
 * permutacao.c
 * main.c
 
