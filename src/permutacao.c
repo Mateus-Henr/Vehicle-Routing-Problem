@@ -4,6 +4,7 @@
 
 #define ZERO 0
 #define UM 1
+#define DOIS 2
 #define ERRO (-1)
 
 // Imprime array (temporário)
@@ -34,30 +35,52 @@ void mudarPosicao(int *a, int *b)
 
 
 /*
- * Realiza todas as permutações possíveis de um array de forma recursiva.
+ * Realiza todas as permutações possíveis de um array de forma iterativa e coloca em um array.
  *
- * @param    array    ponteiro para o array.
- * @param    inicio   posição inicial do array.
- * @param    fim      posição final do array.
+ * @param    arrayParaPermutar    ponteiro para o array.
+ * @param    arrayPermutacoes     ponteiro para o array em que serão armazenados as permutações.
+ * @param    inicio               posição inicial do array.
+ * @param    fim                  posição final do array.
  */
-void permutacao(int *array, int inicio, int fim)
+void permutacao(int *arrayParaPermutar, int *arrayPermutacoes, int qtdElementos)
 {
-    if (inicio == fim)
+    int c[qtdElementos], j = ZERO;
+
+    for (int i = ZERO; i < qtdElementos; i++, j++)
     {
-        imprimeArray(array, fim + UM);
-        return;
+        c[i] = ZERO;
+        arrayPermutacoes[j] = arrayParaPermutar[i];
     }
 
-    for (int i = inicio; i <= fim; i++)
+    int i = ZERO;
+    while (i < qtdElementos)
     {
-        // Mudando posições dos números.
-        mudarPosicao((array + i), (array + inicio));
+        if (c[i] < i)
+        {
+            if (i % DOIS == ZERO)
+            {
+                mudarPosicao(arrayParaPermutar, arrayParaPermutar + i);
+            }
+            else
+            {
+                mudarPosicao(arrayParaPermutar + c[i], arrayParaPermutar + i);
+            }
 
-        // Arrumando primeiro digito e chamando a função "permutacao()" no resto dos digitos.
-        permutacao(array, inicio + UM, fim);
-        mudarPosicao((array + i), (array + inicio));
+            for (int k = ZERO; k < qtdElementos; k++, j++)
+            {
+                arrayPermutacoes[j] = arrayParaPermutar[k];
+            }
+
+            c[i] += 1;
+            i = 0;
+        }
+        else
+        {
+            c[i++] = 0;
+        }
     }
 }
+
 
 /*
  * Calcula fatorial de um número.
@@ -67,14 +90,14 @@ void permutacao(int *array, int inicio, int fim)
  */
 int fatorial(int numero)
 {
-    int sum;
+    int sum = UM;
 
     if (numero < ZERO)
     {
         return ERRO;
     }
 
-    for (int i = UM; i < numero; i++)
+    for (int i = UM; i <= numero; i++)
     {
         sum *= i;
     }

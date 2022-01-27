@@ -55,7 +55,9 @@ int main(void)
     // Definindo as estruturas baseado na quantidade de cidades do arquivo.
     int demandaCidades[qtdCidades];
     int distanciaCidades[qtdCidades][qtdCidades];
-    int permutacoes[qtdCidades];
+    int distanciaCidadesArray[qtdCidades];
+    int totalPermutacoes = fatorial(qtdCidades) * qtdCidades;
+    int permutacoes[totalPermutacoes];
 
     // Lendo as demandas de cada cidade.
     for (int i = ZERO; i < qtdCidades; i++)
@@ -75,14 +77,24 @@ int main(void)
             else if (i < j)
             {
                 fscanf(pArquivo, "%d", &distanciaCidades[i][j]);
-                permutacoes[k++] = distanciaCidades[i][j];
+                distanciaCidadesArray[k++] = distanciaCidades[i][j];
                 distanciaCidades[j][i] = distanciaCidades[i][j];
             }
         }
     }
 
     // Realiza todas as permutações possíveis.
-    permutacao(permutacoes, ZERO, qtdCidades - 1);
+    permutacao(distanciaCidadesArray, permutacoes, qtdCidades);
+
+    for (int i = ZERO; i < totalPermutacoes; i++)
+    {
+        if ((i % qtdCidades) == ZERO)
+        {
+            printf("\n");
+        }
+
+        printf("%d ", permutacoes[i]);
+    }
 
     fclose(pArquivo); // Fechando o arquivo.
     pArquivo = NULL; // Setando ponteiro como nulo.
@@ -93,8 +105,7 @@ int main(void)
 
 /*
  * Função usada para iniciar o clock.
- *
- * @return              valor de quando a função "clock()" é chamada.
+ * Retorna valor de quando a função "clock()" é chamada.
  */
 double inicializaClock(void)
 {
