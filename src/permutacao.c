@@ -1,124 +1,105 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-#define MAX 100
+#include "permutacao.h"
 
-char *PadronizaLista(char *vetor[])
+#define ZERO 0
+#define UM 1
+#define ERRO (-1)
+
+// Imprime array (temporário)
+void imprimeArray(int *array, int tamanho)
 {
-    int i, tamanho;
-    char *buffer[MAX], vetorFinal[MAX];
-    /*Começa acrescentando os 0's e o NULL ao fim da lista*/
-    tamanho = qtdCidades;
-    for (i = 0; i < tamanho; i++)
+    for (int i = ZERO; i < tamanho; i++)
     {
-        const char *str2 = "0";
-        const char *str1 = (char *) *vetor;
-        strcat(strcpy((char *) buffer, (const char *) str1), (const char *) str2);
-        vetor = buffer;
+        printf("%d ", array[i]);
     }
-    strcat(strcpy((char *) vetorFinal, (const char *) vetor), NULL);
-    return (char *) vetorFinal;
+
+    printf("\n");
 }
 
-char *vetor[] = {"1", "2", "3"};
 
-/* Funcao que retorna verdadeiro se
- * `num' nao contem algarismos repetidos
- * e zero caso contrario. */
-char eh_sem_repeticao(int *num, int r)
+/*
+ * Muda os valores do vetor na memória.
+ *
+ * @param    a   valor para ser trocado.
+ * @param    b   valor para ser trocado.
+ */
+void mudarPosicao(int *a, int *b)
 {
-    int i, j;
-
-    for (i = 0; i < r; i++)
-    {
-        for (j = 0; j < r && i != j; j++)
-        {
-            if (num[i] == num[j])
-            {
-                return 0;
-            }
-        }
-    }
-
-    return 1;
+    int temp;
+    temp = *a;
+    *a = *b;
+    *b = temp;
 }
 
-int main(int argc, char **argv)
+
+/*
+ * Realiza todas as permutações possíveis de um array de forma recursiva.
+ *
+ * @param    array    ponteiro para o array.
+ * @param    inicio   posição inicial do array.
+ * @param    fim      posição final do array.
+ */
+void permutacao(int *array, int inicio, int fim)
 {
-    /* vetor que representara cada permutacao. */
-    int *num;
-    /* quantidade de elementos do vetor. */
-    int n;
-    /* tamanho de cada permutacao. */
-    int r;
-    /* controle de loop. */
-    int i, j;
-    /* Obtem a quantidade de elementos do vetor. */
-    n = 0;
-    while (vetor[n] != NULL) n++;
-
-    /* Testa parametros da linha de comando. */
-    if (argc > 1)
+    if (inicio == fim)
     {
-        r = atoi(argv[1]);
-    }
-    else
-    {
-        r = n;
+        imprimeArray(array, fim + UM);
+        return;
     }
 
-    /* Sai do programa se r > n. */
-    if (r > n)
+    for (int i = inicio; i <= fim; i++)
     {
-        printf("Nao faz sentido r > n.\n");
-        return -1;
+        // Mudando posições dos números.
+        mudarPosicao((array + i), (array + inicio));
+
+        // Arrumando primeiro digito e chamando a função "permutacao()" no resto dos digitos.
+        permutacao(array, inicio + UM, fim);
+        mudarPosicao((array + i), (array + inicio));
     }
-
-    /* Aloca espaco para o vetor num. Lembre-se
-     * que o vetor `num' representa um numero
-     * na base n com r algarismos. */
-    num = (int *) calloc(r + 1, sizeof(int));
-    if (num == NULL)
-    {
-        perror("malloc");
-        return -1;
-    }
-
-    /* Inicio do algoritmo. */
-    while (num[r] == 0)
-    {
-        for (i = 0; i < n; i++)
-        {
-            /* Mostra a permutacao na tela se
-             * e somente se `num' nao contem
-             * algarismos repetidos. */
-            if (eh_sem_repeticao(num, r))
-            {
-                for (j = 0; j < r; j++)
-                {
-                    printf("%s ", vetor[num[j]]);
-                }
-                putchar('\n');
-            }
-
-            /* incrementa o algarismo menos
-             * significativo. */
-            num[0]++;
-        }
-
-        /* distribui os vai-uns. */
-        for (i = 0; i < r; i++)
-        {
-            if (num[i] == n)
-            {
-                num[i] = 0;
-                num[i + 1]++;
-            }
-        }
-    }
-    PadronizaLista(*vetor);
-    free(num);
-
-    return 0;
 }
+
+/*
+ * Calcula fatorial de um número.
+ *
+ * @param   numero   um numero.
+ * @return           o fatorial do número caso exista, caso não exista -1.
+ */
+int fatorial(int numero)
+{
+    int sum;
+
+    if (numero < ZERO)
+    {
+        return ERRO;
+    }
+
+    for (int i = UM; i < numero; i++)
+    {
+        sum *= i;
+    }
+
+    return sum;
+}
+
+
+// Testing purposes
+//int main()
+//{
+//    int size = 0;
+//
+//    printf("Enter the size of array:\n");
+//    scanf("%d", &size);
+//
+//    int arr[size];
+//
+//    for (int i = 0; i < size; i++)
+//    {
+//        printf("%d: \n", (i + 1));
+//        scanf("%d", &arr[i]);
+//    }
+//
+//    permutacao(arr, 0, size - 1);
+//
+//    return 0;
+//}

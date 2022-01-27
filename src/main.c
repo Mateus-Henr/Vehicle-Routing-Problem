@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <time.h>
+#include "permutacao.c"
 
 // Varia conforme o sistema operacional.
 #if defined WIN32 || defined _WIN32 || defined __CYGWIN__
@@ -23,7 +24,7 @@ double calculaTempo(double tempoInicial);
 /*
  * A função principal. Tem como função a leitura de informações de um arquivo e manipulação dos dados.
  *
- * @return          0 se executado com sucesso, -1 se occorrer algum erro.
+ * @return          0 se executado com sucesso, -1 se ocorrer algum erro.
  */
 int main(void)
 {
@@ -54,6 +55,7 @@ int main(void)
     // Definindo as estruturas baseado na quantidade de cidades do arquivo.
     int demandaCidades[qtdCidades];
     int distanciaCidades[qtdCidades][qtdCidades];
+    int permutacoes[qtdCidades];
 
     // Lendo as demandas de cada cidade.
     for (int i = ZERO; i < qtdCidades; i++)
@@ -73,10 +75,14 @@ int main(void)
             else if (i < j)
             {
                 fscanf(pArquivo, "%d", &distanciaCidades[i][j]);
+                permutacoes[k++] = distanciaCidades[i][j];
                 distanciaCidades[j][i] = distanciaCidades[i][j];
             }
         }
     }
+
+    // Realiza todas as permutações possíveis.
+    permutacao(permutacoes, ZERO, qtdCidades - 1);
 
     fclose(pArquivo); // Fechando o arquivo.
     pArquivo = NULL; // Setando ponteiro como nulo.
