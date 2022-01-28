@@ -63,8 +63,8 @@ int main(void)
     int distanciaCidades[qtdCidades + 1][qtdCidades + 1];
     int locaisParaPermutar[qtdCidades];
 
-    int totalPermutacoes = fatorial(qtdCidades) * qtdCidades;
-    int permutacoes[totalPermutacoes];
+    int totalCombinacoes = fatorial(qtdCidades) * qtdCidades;
+    int combinacoes[totalCombinacoes];
 
     // Lendo as demandas de cada cidade.
     for (int i = ZERO; i < qtdCidades; i++)
@@ -97,18 +97,18 @@ int main(void)
         }
     }
 
-    // Realiza todas as permutações possíveis com a mesma quantidade de elementos.
-    combination(locaisParaPermutar, permutacoes, qtdCidades);
+    // Realiza todas as combinações possíveis.
+    combination(locaisParaPermutar, combinacoes, qtdCidades);
 
     // Imprimindo permutações.
-    for (int i = ZERO; i < totalPermutacoes; i++)
+    for (int i = ZERO; i < totalCombinacoes; i++)
     {
         if ((i % qtdCidades) == ZERO && i != 0)
         {
             printf("\n");
         }
 
-        printf("%d ", permutacoes[i]);
+        printf("%d ", combinacoes[i]);
     }
 
     fclose(pArquivo); // Fechando o arquivo.

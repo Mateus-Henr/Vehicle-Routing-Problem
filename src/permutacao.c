@@ -24,7 +24,7 @@ void mudarPosicao(int *a, int *b)
 
 
 /*
- * Realiza todas as permutações possíveis de um array de forma iterativa e coloca em um array.
+ * Realiza todas as combinações possíveis de elementos de um array e coloca os resultados em outro array.
  *
  * @param    arrayParaPermutar    ponteiro para o array.
  * @param    arrayPermutacoes     ponteiro para o array em que serão armazenados as permutações.
