@@ -3,4 +3,4 @@ project(TP2 C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(TP2 src/main.c src/permutacao.c src/cidade.c)
+add_executable(TP2 src/main.c src/combinacao.c src/cidade.c)

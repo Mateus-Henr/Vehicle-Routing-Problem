@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 #include "cidade.h"
-#include "permutacao.h"
+#include "combinacao.h"
 
 // Varia conforme o sistema operacional.
 #if defined WIN32 || defined _WIN32 || defined __CYGWIN__
@@ -61,7 +61,7 @@ int main(void)
     struct Cidade cidades[qtdCidades];
 
     int distanciaCidades[qtdCidades + 1][qtdCidades + 1];
-    int locaisParaPermutar[qtdCidades];
+    int locaisParaCombinar[qtdCidades];
 
     int totalCombinacoes = fatorial(qtdCidades) * qtdCidades;
     int combinacoes[totalCombinacoes];
@@ -74,7 +74,7 @@ int main(void)
         cidade.foiVisitada = false;
 
         cidades[i] = cidade;
-        locaisParaPermutar[i] = (i + 1);
+        locaisParaCombinar[i] = (i + 1);
         somatorioDemandas += cidade.demanda;
     }
 
@@ -98,7 +98,7 @@ int main(void)
     }
 
     // Realiza todas as combinações possíveis.
-    combination(locaisParaPermutar, combinacoes, qtdCidades);
+    combinaPetalas(locaisParaCombinar);
 
     // Imprimindo permutações.
     for (int i = ZERO; i < totalCombinacoes; i++)
