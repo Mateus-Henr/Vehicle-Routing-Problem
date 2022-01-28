@@ -1,18 +1,22 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <time.h>
-#include "permutacao.c"
+#include <stdbool.h>
+
+#include "cidade.h"
+#include "permutacao.h"
 
 // Varia conforme o sistema operacional.
 #if defined WIN32 || defined _WIN32 || defined __CYGWIN__
 #define PATH_ARQUIVO "..\\arquivos\\text.txt"
 #else
-#define PATH_ARQUIVO "../arquivos/text.txt" // Edit this one if your OS is not Windows.
+#define PATH_ARQUIVO "../arquivos/text.txt" // Edite caso você estiver em outro plataforma que não seja Windows.
 #endif
 
 #define ERRO_ABRIR_ARQUIVO "Erro ao tentar abrir o arquivo.\n"
 #define ERRO (-1)
 #define ZERO 0
+#define UM 1
 
 // Protótipos de funções.
 
@@ -45,6 +49,7 @@ int main(void)
     // Inicializando variáveis.
     int qtdCidades = 0;
     int cargaCaminhao = 0;
+    unsigned int somatorioDemandas = 0;
 
     // Lendo a quantidade de cidades (N).
     fscanf(pArquivo, "%d", &qtdCidades);
@@ -53,20 +58,30 @@ int main(void)
     fscanf(pArquivo, "%d", &cargaCaminhao);
 
     // Definindo as estruturas baseado na quantidade de cidades do arquivo.
-    int demandaCidades[qtdCidades];
-    int distanciaCidades[qtdCidades][qtdCidades];
-    int distanciaCidadesArray[qtdCidades];
+    struct Cidade cidades[qtdCidades];
+
+    int distanciaCidades[qtdCidades + 1][qtdCidades + 1];
+    int locaisParaPermutar[qtdCidades];
+
     int totalPermutacoes = fatorial(qtdCidades) * qtdCidades;
     int permutacoes[totalPermutacoes];
 
     // Lendo as demandas de cada cidade.
     for (int i = ZERO; i < qtdCidades; i++)
     {
-        fscanf(pArquivo, "%d ", &demandaCidades[i]);
+        struct Cidade cidade;
+        fscanf(pArquivo, "%d ", &cidade.demanda);
+        cidade.foiVisitada = false;
+
+        cidades[i] = cidade;
+        locaisParaPermutar[i] = (i + 1);
+        somatorioDemandas += cidade.demanda;
     }
 
+    unsigned int qtdCaminhoes = somatorioDemandas / cargaCaminhao;
+
     // Colocando valores em uma matriz simétrica (Ci para Cj).
-    for (int i = ZERO, k = ZERO; i < qtdCidades; i++)
+    for (int i = ZERO; i < qtdCidades; i++)
     {
         for (int j = ZERO; j < qtdCidades; j++)
         {
@@ -77,18 +92,18 @@ int main(void)
             else if (i < j)
             {
                 fscanf(pArquivo, "%d", &distanciaCidades[i][j]);
-                distanciaCidadesArray[k++] = distanciaCidades[i][j];
                 distanciaCidades[j][i] = distanciaCidades[i][j];
             }
         }
     }
 
-    // Realiza todas as permutações possíveis.
-    permutacao(distanciaCidadesArray, permutacoes, qtdCidades);
+    // Realiza todas as permutações possíveis com a mesma quantidade de elementos.
+    combination(locaisParaPermutar, permutacoes, qtdCidades);
 
+    // Imprimindo permutações.
     for (int i = ZERO; i < totalPermutacoes; i++)
     {
-        if ((i % qtdCidades) == ZERO)
+        if ((i % qtdCidades) == ZERO && i != 0)
         {
             printf("\n");
         }
@@ -98,6 +113,7 @@ int main(void)
 
     fclose(pArquivo); // Fechando o arquivo.
     pArquivo = NULL; // Setando ponteiro como nulo.
+
 
     return ZERO;
 }

@@ -7,17 +7,6 @@
 #define DOIS 2
 #define ERRO (-1)
 
-// Imprime array (temporário)
-void imprimeArray(int *array, int tamanho)
-{
-    for (int i = ZERO; i < tamanho; i++)
-    {
-        printf("%d ", array[i]);
-    }
-
-    printf("\n");
-}
-
 
 /*
  * Muda os valores do vetor na memória.
@@ -42,7 +31,7 @@ void mudarPosicao(int *a, int *b)
  * @param    inicio               posição inicial do array.
  * @param    fim                  posição final do array.
  */
-void permutacao(int *arrayParaPermutar, int *arrayPermutacoes, int qtdElementos)
+void combination(int *arrayParaPermutar, int *arrayPermutacoes, int qtdElementos)
 {
     int c[qtdElementos], j = ZERO;
 
@@ -122,7 +111,7 @@ int fatorial(int numero)
 //        scanf("%d", &arr[i]);
 //    }
 //
-//    permutacao(arr, 0, size - 1);
+//    combination(arr, 0, size - 1);
 //
 //    return 0;
 //}
