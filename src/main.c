@@ -104,12 +104,14 @@ int main(void)
     // Imprimindo permutações.
     for (int i = ZERO; i < totalCombinacoes; i++)
     {
-        if ((i % qtdCidades) == ZERO && i != 0)
+        if (combinacoes[i] != ZERO)
+        {
+            printf("%d ", combinacoes[i]);
+        }
+        else
         {
             printf("\n");
         }
-
-        printf("%d ", combinacoes[i]);
     }
 
     fclose(pArquivo); // Fechando o arquivo.
