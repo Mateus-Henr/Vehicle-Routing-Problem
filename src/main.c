@@ -60,10 +60,11 @@ int main(void)
     // Definindo as estruturas baseado na quantidade de cidades do arquivo.
     struct Cidade cidades[qtdCidades];
 
+    // Adicionando o depósito.
     int distanciaCidades[qtdCidades + 1][qtdCidades + 1];
     int locaisParaCombinar[qtdCidades];
 
-    int totalCombinacoes = fatorial(qtdCidades) * qtdCidades;
+    int totalCombinacoes = qtdTotalCombinacoes(qtdCidades);
     int combinacoes[totalCombinacoes];
 
     // Lendo as demandas de cada cidade.
@@ -98,7 +99,7 @@ int main(void)
     }
 
     // Realiza todas as combinações possíveis.
-    combinaPetalas(locaisParaCombinar);
+    combinacao(locaisParaCombinar, combinacoes, qtdCidades);
 
     // Imprimindo permutações.
     for (int i = ZERO; i < totalCombinacoes; i++)

@@ -1,199 +1,80 @@
-#include <stdio.h>
+#include <stddef.h>
 
 #include "combinacao.h"
 
 #define ZERO 0
 #define UM 1
-#define DOIS 2
 #define ERRO (-1)
 
+void cadaCombinacao(int *array, int *data, int *arrayFinal, int *pIndexArrayFinal, int inicio, int fim, int index, int r)
+{
+    if (index == r)
+    {
+        for (int j = ZERO; j < r; j++)
+        {
+            arrayFinal[*pIndexArrayFinal] = data[j];
+        }
 
-///*
-// * Muda os valores do vetor na memória.
-// *
-// * @param    a   valor para ser trocado.
-// * @param    b   valor para ser trocado.
-// */
-//void mudarPosicao(int *a, int *b)
-//{
-//    int temp;
-//    temp = *a;
-//    *a = *b;
-//    *b = temp;
-//}
-//
-//
-///*
-// * Realiza todas as combinações possíveis de elementos de um array e coloca os resultados em outro array.
-// *
-// * @param    arrayParaPermutar    ponteiro para o array.
-// * @param    arrayPermutacoes     ponteiro para o array em que serão armazenados as permutações.
-// * @param    inicio               posição inicial do array.
-// * @param    fim                  posição final do array.
-// */
-//void combination(int *arrayParaPermutar, int *arrayPermutacoes, int qtdElementos)
-//{
-//    int c[qtdElementos], j = ZERO;
-//
-//    for (int i = ZERO; i < qtdElementos; i++, j++)
-//    {
-//        c[i] = ZERO;
-//        arrayPermutacoes[j] = arrayParaPermutar[i];
-//    }
-//
-//    int i = ZERO;
-//    while (i < qtdElementos)
-//    {
-//        if (c[i] < i)
-//        {
-//            if (i % DOIS == ZERO)
-//            {
-//                mudarPosicao(arrayParaPermutar, arrayParaPermutar + i);
-//            }
-//            else
-//            {
-//                mudarPosicao(arrayParaPermutar + c[i], arrayParaPermutar + i);
-//            }
-//
-//            for (int k = ZERO; k < qtdElementos; k++, j++)
-//            {
-//                arrayPermutacoes[j] = arrayParaPermutar[k];
-//            }
-//
-//            c[i] += 1;
-//            i = 0;
-//        }
-//        else
-//        {
-//            c[i++] = 0;
-//        }
-//    }
-//}
-//
-//
-///*
-// * Calcula fatorial de um número.
-// *
-// * @param   numero   um numero.
-// * @return           o fatorial do número caso exista, caso não exista -1.
-// */
-//int fatorial(int numero)
-//{
-//    int sum = UM;
-//
-//    if (numero < ZERO)
-//    {
-//        return ERRO;
-//    }
-//
-//    for (int i = UM; i <= numero; i++)
-//    {
-//        sum *= i;
-//    }
-//
-//    return sum;
-//}
+        return;
+    }
+
+    for (int i = inicio; i <= fim && fim - i + UM >= r - index; i++)
+    {
+        data[index] = array[i];
+        cadaCombinacao(array, data, arrayFinal, pIndexArrayFinal + UM, i + UM, fim, index + UM, r);
+    }
+}
+
+void combinacao(int *array, int *arrayFinal, int n)
+{
+    int data[n];
+    int indexArrayFinal = ZERO;
+    int *pIndexArrayFinal = &indexArrayFinal;
+
+    for (int i = n; i >= UM; i--)
+    {
+        cadaCombinacao(array, data, arrayFinal, pIndexArrayFinal, ZERO, n - UM, ZERO, i);
+    }
+}
 
 
 /*
- * [comb.c]
- * Programa que gera todas as combinações dos caracteres
- * de uma string de entrada.
+ * Calcula fatorial de um número.
  *
- * [Autor]
- * Marcos Paulo Ferreir (Daemonio)
- * undefinido gmail com
- * https://daemoniolabs.wordpress.com/
- *
- * [Uso]
- * $ gcc -o comb comb.c
- * $ echo 'abcd' | ./comb
- *
- * Versão 1.0 by daemonio @ Thu Feb 17 08:17:31 BRST 2011
- *
+ * @param   numero   um numero.
+ * @return           o fatorial do número dado.
  */
-#include <stdio.h>
-#include <string.h>
-
-/* Tamanho máximo da entrada */
-#define MAX_INPUT 31
-
-void combinaPetalas(int *locaisParaCombinar)
+int fatorial(int numero)
 {
-    unsigned MAX, MASK, NUM;
-    int i, j;
-    /* Armazena a string de entrada. */
-    /* Armazena cada combinação. */
-    char str[MAX_INPUT];
+    int sum = UM;
 
-
-    /* Manda o bit 1 para a n-ésima posição.
-     * Os bits são invertidos para que a posição n
-     * esteja com o bit zero, a fim de marcar
-     * o final do processo.
-     */
-    MAX = ~(1 << strlen(locaisParaCombinar));
-
-    /* Primeiro número é o 1. */
-    NUM = 1;
-
-    putchar('\n');
-
-    /* Quando o número alcançar MAX, o loop
-     * será encerrado.
-     */
-    while (MAX & NUM)
+    for (int i = UM; i <= numero; i++)
     {
-        MASK = 1;
-        i = j = 0;
-
-        while (MAX & MASK)
-        {
-            /* Verdadeiro se NUM tem um bit 1
-             * na posição indicada por MASK. */
-            if (NUM & MASK)
-            {
-                /* Gera a combinação em str. */
-                str[i] = locaisParaCombinar[j];
-                i++;
-            }
-            j++;
-            /* Desloca a máscara */
-            MASK = MASK << 1;
-        }
-
-        str[i] = 0;
-        printf("%s\n", str);
-
-        NUM++;
+        sum *= i;
     }
+
+    return sum;
 }
 
-int fatorial(int n)
+/*
+ * Calcula a quantidade de combinações possíveis para uma quantidade de elementos.
+ *
+ * @param    n    número de possibilidades para começar.
+ * @return        quantidade de combinação para os dados parâmetros. Em caso de valores inválidos, -1.
+ */
+int qtdTotalCombinacoes(int n)
 {
-    if (n > 0)
+    if (n < ZERO)
     {
-        return n * fatorial(n - 1);
+        return ERRO;
     }
-    else
-    {
-        return 1;
-    }
-}
 
-int arranjo(int numero, int posicoes)
-{
-    if (posicoes > 1)
-    {
-        return numero * arranjo(numero - 1, posicoes - 1);
-    }
-    else
-    {
-        return numero;
-    }
-}
+    int sum = ZERO;
 
-int combinacao(int numero, int posicoes)
-{
-    return arranjo(numero, posicoes) / fatorial(posicoes);
+    for (int i = n; i >= UM; i--)
+    {
+        sum += fatorial(n) / (fatorial(i) * fatorial(n - i));
+    }
+
+    return sum;
 }

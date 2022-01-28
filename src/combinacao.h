@@ -1,7 +1,3 @@
-void combinaPetalas(int *locaisParaCombinar);
+void combinacao(int *array, int *arrayFinal, int n);
 
-int fatorial(int numero);
-
-int arranjo(int numero, int posicoes);
-
-int combinacao(int numero, int posicoes);
+int qtdTotalCombinacoes(int n);
