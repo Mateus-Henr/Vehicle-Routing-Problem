@@ -13,7 +13,7 @@
 #define PATH_ARQUIVO "../arquivos/text.txt" // Edite caso você estiver em outro plataforma que não seja Windows.
 #endif
 
-#define ERRO_ABRIR_ARQUIVO "Erro ao tentar abrir o arquivo.\n"
+#define ERRO_ABRIR_ARQUIVO "\nErro ao tentar abrir o arquivo.\n"
 #define ERRO (-1)
 #define ZERO 0
 #define UM 1
@@ -32,6 +32,9 @@ double calculaTempo(double tempoInicial);
  */
 int main(void)
 {
+    // Inicializando o inicioClock.
+    double inicioClock = inicializaClock();
+
     // Inicializando ponteiro do arquivo.
     FILE *pArquivo = NULL;
 
@@ -64,7 +67,7 @@ int main(void)
     int distanciaCidades[qtdCidades + 1][qtdCidades + 1];
     int locaisParaCombinar[qtdCidades];
 
-    int totalCombinacoes = qtdTotalCombinacoes(qtdCidades);
+    int totalCombinacoes = calculaQtdElementos(qtdCidades);
     int combinacoes[totalCombinacoes];
 
     // Lendo as demandas de cada cidade.
@@ -101,10 +104,11 @@ int main(void)
     // Realiza todas as combinações possíveis.
     combinacao(locaisParaCombinar, combinacoes, qtdCidades);
 
-    // Imprimindo permutações.
+    // Imprimindo combinações.
+    printf("Todas as combinacoes possiveis: \n");
     for (int i = ZERO; i < totalCombinacoes; i++)
     {
-        if (combinacoes[i] != ZERO)
+        if (combinacoes[i] != SEPARADOR)
         {
             printf("%d ", combinacoes[i]);
         }
@@ -116,6 +120,10 @@ int main(void)
 
     fclose(pArquivo); // Fechando o arquivo.
     pArquivo = NULL; // Setando ponteiro como nulo.
+
+    double tempoTotal = calculaTempo(inicioClock);
+
+    printf("\nTempo total = %0.2lf segundos.\n", tempoTotal);
 
 
     return ZERO;
