@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <stddef.h>
 #include <time.h>
 #include <stdbool.h>
@@ -43,6 +42,9 @@ int main(void)
 {
     // Inicializando o inicioClock.
     double inicioClock = inicializaClock();
+
+
+    /// ------------------------------------------- OPERAÇÕES NO ARQUIVO -----------------------------------------------
 
     // Inicializando ponteiro do arquivo.
     FILE *pArquivo = NULL;
@@ -130,6 +132,17 @@ int main(void)
         printf("\n");
     }
 
+    // Fim das operações no arquivo.
+    fclose(pArquivo); // Fechando o arquivo.
+    pArquivo = NULL; // Setando ponteiro como nulo.
+
+    /// -------------------------------------- FIM DE OPERAÇÕES NO ARQUIVO ---------------------------------------------
+
+
+
+    /// ----------------------------------------- PROCESSAMENTO DOS DADOS ----------------------------------------------
+
+
     // Realiza todas as combinações possíveis.
     combinacao(locaisParaCombinar, combinacoes, qtdCidades);
 
@@ -137,10 +150,13 @@ int main(void)
     imprimeCombinacoes(combinacoes, totalElementosNaMatriz);
 
 
-    // ----------------------- ESBOÇO CÓDIGO QUE CALCULA A MAIS OPTIMIZADA DISTÂNCIA -----------------------------------
+    /// ---------------------------- ESBOÇO CÓDIGO QUE CALCULA A ROTA MAIS OPTIMIZADA ----------------------------------
 
+    // Array para armazenar quantidade de combinações para cada quantidade de elementos.
     int qtdItensCadaCombinacao[qtdCidades];
 
+    // Colocando a quantidade de combinações para cada quantidade de elementos. Considera também espaços para os
+    // separadores encontrados no array.
     for (int i = qtdCidades; i >= UM; i--)
     {
         qtdItensCadaCombinacao[qtdCidades - i] =
@@ -149,75 +165,82 @@ int main(void)
 
     printf("\n\nMELHORES CAMINHOS: \n");
 
+    // Definindo a demanda total para operações.
     int demandaAtual = somatorioDemandas;
 
-    int somaRota[DOIS] = {NULO, NULO};
-    int tempRota[DOIS] = {NULO, NULO};
+    // Definindo arrays com propósito de comparar soma das distâncias e salvar a mais optimizada.
+    // Possui dois index, o primeiro para armazenar a posição no array principal da rota mais optimizada.
+    // O segundo armazena o somatório das distâncias para cada conjunto de valores.
+    int melhorRota[DOIS] = {NULO, NULO};
+    int rotaAtual[DOIS] = {NULO, NULO};
 
-    int currLoop = ZERO;
-    int currIndex = ZERO;
+    // Variáveis de controle.
+    int numeroDeItemsAtual = ZERO;
+    int indexAtualArray = ZERO;
 
-    while (currLoop < qtdCidades)
+    while (numeroDeItemsAtual < qtdCidades)
     {
         int i = ZERO;
 
-        while (i < qtdItensCadaCombinacao[currLoop])
+        while (i < qtdItensCadaCombinacao[numeroDeItemsAtual])
         {
-            if (combinacoes[currIndex] == SEPARADOR)
+            if (combinacoes[indexAtualArray] == SEPARADOR)
             {
-                if (somaRota[TOTAL_ROTA] < cargaCaminhao && somaRota[TOTAL_ROTA] < tempRota[TOTAL_ROTA] &&
-                    somaRota[TOTAL_ROTA] <= demandaAtual || tempRota[TOTAL_ROTA] == NULO)
+                if (rotaAtual[TOTAL_ROTA] < cargaCaminhao && rotaAtual[TOTAL_ROTA] < melhorRota[TOTAL_ROTA] &&
+                    rotaAtual[TOTAL_ROTA] <= demandaAtual || melhorRota[TOTAL_ROTA] == NULO)
                 {
-                    tempRota[POSICAO_ROTA] = somaRota[POSICAO_ROTA];
-                    tempRota[TOTAL_ROTA] = somaRota[TOTAL_ROTA];
+                    melhorRota[POSICAO_ROTA] = rotaAtual[POSICAO_ROTA];
+                    melhorRota[TOTAL_ROTA] = rotaAtual[TOTAL_ROTA];
                 }
 
-                somaRota[POSICAO_ROTA] = NULO;
-                somaRota[TOTAL_ROTA] = NULO;
+                rotaAtual[POSICAO_ROTA] = NULO;
+                rotaAtual[TOTAL_ROTA] = NULO;
             }
             else
             {
-                if (somaRota[POSICAO_ROTA] == NULO)
+                if (rotaAtual[POSICAO_ROTA] == NULO)
                 {
-                    somaRota[POSICAO_ROTA] = i;
-                    somaRota[TOTAL_ROTA] = distanciaCidades[ZERO][combinacoes[currIndex]];
+                    rotaAtual[POSICAO_ROTA] = i;
+                    rotaAtual[TOTAL_ROTA] = distanciaCidades[ZERO][combinacoes[indexAtualArray]];
                 }
 
-                if (currIndex + 1 < qtdItensCadaCombinacao[currLoop])
+                if (indexAtualArray + UM < qtdItensCadaCombinacao[numeroDeItemsAtual])
                 {
-                    somaRota[TOTAL_ROTA] += distanciaCidades[combinacoes[currIndex]][combinacoes[currIndex + 1]];
-                    int a = combinacoes[currIndex];
-                    int b = combinacoes[currIndex + 1];
-                    int c = a + b;
+                    rotaAtual[TOTAL_ROTA] += distanciaCidades[combinacoes[indexAtualArray]][combinacoes[
+                            indexAtualArray + UM]];
+                    int a = combinacoes[indexAtualArray];
+                    int b = combinacoes[indexAtualArray + UM];
+                    int c = a + b; // Usado para debugar.
                 }
             }
 
             i++;
-            currIndex++;
+            indexAtualArray++;
         }
 
-        if (tempRota[POSICAO_ROTA] != NULO)
+        // Caso encontre uma rota optimizada.
+        if (melhorRota[POSICAO_ROTA] != NULO)
         {
             i = ZERO;
 
-            while (combinacoes[tempRota[POSICAO_ROTA] + i] != SEPARADOR)
+            while (combinacoes[melhorRota[POSICAO_ROTA] + i] != SEPARADOR)
             {
-                printf("%d ", combinacoes[tempRota[POSICAO_ROTA] + i]);
+                printf("%d ", combinacoes[melhorRota[POSICAO_ROTA] + i]);
                 i++;
             }
 
             printf("\n");
-            demandaAtual -= tempRota[TOTAL_ROTA];
+            demandaAtual -= melhorRota[TOTAL_ROTA];
         }
 
-        currLoop++;
+        numeroDeItemsAtual++;
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
+    /// ------------------------- FIM DO ESBOÇO CÓDIGO QUE CALCULA A ROTA MAIS OPTIMIZADA ------------------------------
 
 
-    fclose(pArquivo); // Fechando o arquivo.
-    pArquivo = NULL; // Setando ponteiro como nulo.
+    /// ------------------------------------- FIM DO PROCESSAMENTO DOS DADOS -------------------------------------------
+
 
     // Calculando tempo total de execução do programa.
     double tempoTotal = calculaTempo(inicioClock);

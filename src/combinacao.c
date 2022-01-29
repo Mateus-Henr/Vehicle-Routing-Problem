@@ -8,6 +8,8 @@
 
 void calculaPetala(int *array, int *data, int *arrayFinal, int *pIndexArray, int inicio, int fim, int index, int r);
 
+int fatorial(int numero);
+
 
 /*
  *  Calcula todas as possibilidades de combinações de um dado array de inteiros para todas as variações de quantidade
