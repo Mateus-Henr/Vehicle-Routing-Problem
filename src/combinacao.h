@@ -1,4 +1,4 @@
-#define SEPARADOR (-1)
+#define SEPARADOR '-'
 
 void combinacao(int *array, int *arrayFinal, int n);
 
