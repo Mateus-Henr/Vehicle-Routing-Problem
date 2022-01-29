@@ -29,6 +29,10 @@ double inicializaClock(void);
 
 double calculaTempo(double tempoInicial);
 
+void imprimeCombinacoes(int *arrayCombinacoes, int totalCombinacoes);
+
+int calculaDimensoesMatriz(int qtdElementos);
+
 
 /*
  * A função principal. Tem como função a leitura de informações de um arquivo e manipulação dos dados.
@@ -65,18 +69,21 @@ int main(void)
     // Lendo a capacidade do caminhão (Qv).
     fscanf(pArquivo, "%d", &cargaCaminhao);
 
-    // Definindo as estruturas baseado na quantidade de cidades do arquivo.
+    // Definindo array da estrutura Cidade para armazenar as cidades.
     struct Cidade cidades[qtdCidades];
 
-    // Adicionando o depósito.
+    // Definindo matriz para armazenar as distâncias entre as cidades/depósito. Adicionando um para o depósito.
     int distanciaCidades[qtdCidades + 1][qtdCidades + 1];
+
+    // Array com os elementos para fazer combinações.
     int locaisParaCombinar[qtdCidades];
 
-    int totalCombinacoes = calculaQtdElementos(qtdCidades);
-    int combinacoes[totalCombinacoes];
+    // Calculando a quantidade de espaços que a matriz terá e definindo a matriz baseado nesse valor.
+    int totalElementosNaMatriz = calculaQtdElementos(qtdCidades);
+    int combinacoes[totalElementosNaMatriz];
 
     // Lendo as demandas de cada cidade.
-    for (int i = ZERO; i <= qtdCidades; i++)
+    for (int i = ZERO; i < qtdCidades; i++)
     {
         struct Cidade cidade;
         fscanf(pArquivo, "%d ", &cidade.demanda);
@@ -87,13 +94,18 @@ int main(void)
         somatorioDemandas += (int) cidade.demanda;
     }
 
+    // Calculando a quantidade de caminhões.
     unsigned int qtdCaminhoes = somatorioDemandas / cargaCaminhao;
+    printf("Quantidade caminhoes: %d\n", qtdCaminhoes);
 
-    printf("Printando matriz simetrica: \n");
-    // Colocando valores em uma matriz simétrica (Ci para Cj).
-    for (int i = ZERO; i <= qtdCidades; i++)
+    // Calculando dimensões para a matriz simétrica baseada na quantidade de elementos da mesma.
+    int dimensaoMatriz = calculaDimensoesMatriz(qtdCidades);
+
+    // Colocando valores do arquivo em uma matriz simétrica (Ci para Cj).
+    printf("\nPrintando matriz simetrica: \n");
+    for (int i = ZERO; i < dimensaoMatriz; i++)
     {
-        for (int j = ZERO; j <= qtdCidades; j++)
+        for (int j = ZERO; j < dimensaoMatriz; j++)
         {
             if (i == j)
             {
@@ -101,7 +113,7 @@ int main(void)
             }
             else if (i <= j)
             {
-                if(fscanf(pArquivo, "%d", &distanciaCidades[i][j]) != EOF)
+                if (fscanf(pArquivo, "%d", &distanciaCidades[i][j]) != EOF)
                 {
                     distanciaCidades[j][i] = distanciaCidades[i][j];
                 }
@@ -122,33 +134,10 @@ int main(void)
     combinacao(locaisParaCombinar, combinacoes, qtdCidades);
 
     // Imprimindo combinações.
-    printf("\nTodas as combinacoes possiveis: \n");
-    for (int i = ZERO; i < totalCombinacoes; i++)
-    {
-        if (combinacoes[i] != SEPARADOR)
-        {
-            printf("%d ", combinacoes[i]);
-        }
-        else
-        {
-            printf("\n");
-        }
-    }
+    imprimeCombinacoes(combinacoes, totalElementosNaMatriz);
 
-    printf("\nArray completo: \n");
-    for (int i = ZERO; i < totalCombinacoes; i++)
-    {
-        if (combinacoes[i] == SEPARADOR)
-        {
-            printf("%c ", combinacoes[i]);
-        }
-        else
-        {
-            printf("%d ", combinacoes[i]);
-        }
-    }
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // ----------------------- ESBOÇO CÓDIGO QUE CALCULA A MAIS OPTIMIZADA DISTÂNCIA -----------------------------------
 
     int qtdItensCadaCombinacao[qtdCidades];
 
@@ -183,8 +172,8 @@ int main(void)
                     tempRota[TOTAL_ROTA] = somaRota[TOTAL_ROTA];
                 }
 
-                somaRota[POSICAO_ROTA] = ZERO;
-                somaRota[TOTAL_ROTA] = ZERO;
+                somaRota[POSICAO_ROTA] = NULO;
+                somaRota[TOTAL_ROTA] = NULO;
             }
             else
             {
@@ -230,6 +219,7 @@ int main(void)
     fclose(pArquivo); // Fechando o arquivo.
     pArquivo = NULL; // Setando ponteiro como nulo.
 
+    // Calculando tempo total de execução do programa.
     double tempoTotal = calculaTempo(inicioClock);
 
     printf("\nTempo total = %0.2lf segundos.\n", tempoTotal);
@@ -240,8 +230,8 @@ int main(void)
 
 
 /*
- * Função usada para iniciar o clock.
- * Retorna valor de quando a função "clock()" é chamada.
+ * Inicia o clock.
+ * @return      valor de quando a função "clock()" é chamada.
  */
 double inicializaClock(void)
 {
@@ -250,7 +240,7 @@ double inicializaClock(void)
 
 
 /*
- * Função usada para finalizar o clock e calcular o tempo total.
+ * Finaliza o clock e calcular o tempo total.
  *
  * @param    tempoInicial    valor da primeira vez que a função "clock()" foi chamada.
  * @return                   valor calculado referente ao tempo entre o tempo inicial e o tempo final.
@@ -260,3 +250,55 @@ double calculaTempo(double tempoInicial)
     return (double) (clock() - tempoInicial) / CLOCKS_PER_SEC;
 }
 
+
+/*
+ * Calcula a miníma dimensão para a matriz simétrica necessária para armazenar as distâncias.
+ *
+ * @param    qtdElementos    número de elementos.
+ * @return                   dimensão para matriz simétrica.
+ */
+int calculaDimensoesMatriz(int qtdElementos)
+{
+    int dimensaoMatriz = UM;
+    int sum = ZERO - UM;
+
+    while (sum < qtdElementos)
+    {
+        sum += dimensaoMatriz++;
+    }
+
+    return dimensaoMatriz;
+}
+
+
+/*
+ * TESTING PURPOSES.
+ */
+void imprimeCombinacoes(int *arrayCombinacoes, int totalCombinacoes)
+{
+    printf("\nTodas as combinacoes possiveis: \n");
+    for (int i = ZERO; i < totalCombinacoes; i++)
+    {
+        if (arrayCombinacoes[i] != SEPARADOR)
+        {
+            printf("%d ", arrayCombinacoes[i]);
+        }
+        else
+        {
+            printf("\n");
+        }
+    }
+
+    printf("\nArray completo: \n");
+    for (int i = ZERO; i < totalCombinacoes; i++)
+    {
+        if (arrayCombinacoes[i] == SEPARADOR)
+        {
+            printf("%c ", arrayCombinacoes[i]);
+        }
+        else
+        {
+            printf("%d ", arrayCombinacoes[i]);
+        }
+    }
+}

@@ -6,8 +6,6 @@
 
 // Protótipos de funções.
 
-int fatorial(int numero);
-
 void calculaPetala(int *array, int *data, int *arrayFinal, int *pIndexArray, int inicio, int fim, int index, int r);
 
 
