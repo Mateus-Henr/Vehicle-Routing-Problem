@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <time.h>
 #include <stdbool.h>
@@ -28,9 +29,7 @@ double inicializaClock(void);
 
 double calculaTempo(double tempoInicial);
 
-void imprimeCombinacoes(int *arrayCombinacoes, int totalCombinacoes);
-
-int calculaDimensoesMatriz(int qtdElementos);
+void imprimeCombinacoes(int **arrayCombinacoes, int totalCombinacoes, int *qtdItens, int *qtdCombItem);
 
 
 /*
@@ -80,11 +79,11 @@ int main(void)
     // Array com os elementos para fazer combinações.
     int locaisParaCombinar[qtdCidades];
 
-    // Calculando a quantidade de espaços que a matriz terá e definindo a matriz baseado nesse valor.
-    int totalElementosNaMatriz = calculaQtdElementos(qtdCidades);
-    int combinacoes[totalElementosNaMatriz];
+    int qtdCombinacoes = calculaQtdElementos(qtdCidades);
+    int *combinacoes[qtdCombinacoes];
 
     // Lendo as demandas de cada cidade.
+    printf("Demandas: \n");
     for (int i = ZERO; i < qtdCidades; i++)
     {
         struct Cidade cidade;
@@ -94,20 +93,18 @@ int main(void)
         cidades[i] = cidade;
         locaisParaCombinar[i] = (i + 1);
         somatorioDemandas += (int) cidade.demanda;
+        printf("Cidade %d = %d\n", (i + 1), cidade.demanda);
     }
 
     // Calculando a quantidade de caminhões.
     unsigned int qtdCaminhoes = somatorioDemandas / cargaCaminhao;
-    printf("Quantidade caminhoes: %d\n", qtdCaminhoes);
-
-    // Calculando dimensões para a matriz simétrica baseada na quantidade de elementos da mesma.
-    int dimensaoMatriz = calculaDimensoesMatriz(qtdCidades);
+    printf("\nQuantidade de caminhoes: %d\n", qtdCaminhoes);
 
     // Colocando valores do arquivo em uma matriz simétrica (Ci para Cj).
     printf("\nPrintando matriz simetrica: \n");
-    for (int i = ZERO; i < dimensaoMatriz; i++)
+    for (int i = ZERO; i < qtdCidades + 1; i++)
     {
-        for (int j = ZERO; j < dimensaoMatriz; j++)
+        for (int j = ZERO; j < qtdCidades + 1; j++)
         {
             if (i == j)
             {
@@ -115,15 +112,8 @@ int main(void)
             }
             else if (i <= j)
             {
-                if (fscanf(pArquivo, "%d", &distanciaCidades[i][j]) != EOF)
-                {
-                    distanciaCidades[j][i] = distanciaCidades[i][j];
-                }
-                else
-                {
-                    distanciaCidades[i][j] = NULO;
-                    distanciaCidades[j][i] = NULO;
-                }
+                fscanf(pArquivo, "%d", &distanciaCidades[i][j]);
+                distanciaCidades[j][i] = distanciaCidades[i][j];
             }
 
             printf("%02d ", distanciaCidades[i][j]);
@@ -142,98 +132,64 @@ int main(void)
 
     /// ----------------------------------------- PROCESSAMENTO DOS DADOS ----------------------------------------------
 
+    // Array para armazenar quantidade de combinações para cada quantidade de elementos.
+    int qtdItensCadaCombinacao[qtdCidades];
+    int qtdCombinacoesItem[qtdCidades];
+
+    for (int i = qtdCidades; i >= UM; i--)
+    {
+        qtdItensCadaCombinacao[qtdCidades - i] = i + DOIS;
+        // Colocando a quantidade de combinações para cada quantidade de elementos.
+        qtdCombinacoesItem[qtdCidades - i] = calculaQtdCombinacoes(qtdCidades, i);
+    }
+
 
     // Realiza todas as combinações possíveis.
     combinacao(locaisParaCombinar, combinacoes, qtdCidades);
 
     // Imprimindo combinações.
-    imprimeCombinacoes(combinacoes, totalElementosNaMatriz);
+    imprimeCombinacoes(combinacoes, qtdCombinacoes, qtdItensCadaCombinacao, qtdCombinacoesItem);
+
 
 
     /// ---------------------------- ESBOÇO CÓDIGO QUE CALCULA A ROTA MAIS OPTIMIZADA ----------------------------------
 
-    // Array para armazenar quantidade de combinações para cada quantidade de elementos.
-    int qtdItensCadaCombinacao[qtdCidades];
+    printf("\nMELHORES CAMINHOS: \n");
 
-    // Colocando a quantidade de combinações para cada quantidade de elementos. Considera também espaços para os
-    // separadores encontrados no array.
-    for (int i = qtdCidades; i >= UM; i--)
+    int *melhoresRotas[qtdCombinacoes];
+    int rotasEncontradas = ZERO;
+    int trocaQtdDigitos = qtdCombinacoesItem[ZERO];
+    int indexAtual = ZERO;
+
+    for (int idxCombAtual = ZERO; idxCombAtual < qtdCombinacoes; idxCombAtual++)
     {
-        qtdItensCadaCombinacao[qtdCidades - i] =
-                calculaQtdCombinacoes(qtdCidades, i) * i + calculaQtdCombinacoes(qtdCidades, i);
-    }
+        int demandaRota = ZERO;
 
-    printf("\n\nMELHORES CAMINHOS: \n");
-
-    // Definindo a demanda total para operações.
-    int demandaAtual = somatorioDemandas;
-
-    // Definindo arrays com propósito de comparar soma das distâncias e salvar a mais optimizada.
-    // Possui dois index, o primeiro para armazenar a posição no array principal da rota mais optimizada.
-    // O segundo armazena o somatório das distâncias para cada conjunto de valores.
-    int melhorRota[DOIS] = {NULO, NULO};
-    int rotaAtual[DOIS] = {NULO, NULO};
-
-    // Variáveis de controle.
-    int numeroDeItemsAtual = ZERO;
-    int indexAtualArray = ZERO;
-
-    while (numeroDeItemsAtual < qtdCidades)
-    {
-        int i = ZERO;
-
-        while (i < qtdItensCadaCombinacao[numeroDeItemsAtual])
+        if (idxCombAtual == trocaQtdDigitos)
         {
-            if (combinacoes[indexAtualArray] == SEPARADOR)
-            {
-                if (rotaAtual[TOTAL_ROTA] < cargaCaminhao && rotaAtual[TOTAL_ROTA] < melhorRota[TOTAL_ROTA] &&
-                    rotaAtual[TOTAL_ROTA] <= demandaAtual || melhorRota[TOTAL_ROTA] == NULO)
-                {
-                    melhorRota[POSICAO_ROTA] = rotaAtual[POSICAO_ROTA];
-                    melhorRota[TOTAL_ROTA] = rotaAtual[TOTAL_ROTA];
-                }
-
-                rotaAtual[POSICAO_ROTA] = NULO;
-                rotaAtual[TOTAL_ROTA] = NULO;
-            }
-            else
-            {
-                if (rotaAtual[POSICAO_ROTA] == NULO)
-                {
-                    rotaAtual[POSICAO_ROTA] = i;
-                    rotaAtual[TOTAL_ROTA] = distanciaCidades[ZERO][combinacoes[indexAtualArray]];
-                }
-
-                if (indexAtualArray + UM < qtdItensCadaCombinacao[numeroDeItemsAtual])
-                {
-                    rotaAtual[TOTAL_ROTA] += distanciaCidades[combinacoes[indexAtualArray]][combinacoes[
-                            indexAtualArray + UM]];
-                    int a = combinacoes[indexAtualArray];
-                    int b = combinacoes[indexAtualArray + UM];
-                    int c = a + b; // Usado para debugar.
-                }
-            }
-
-            i++;
-            indexAtualArray++;
+            trocaQtdDigitos += qtdCombinacoesItem[++indexAtual];
         }
 
-        // Caso encontre uma rota optimizada.
-        if (melhorRota[POSICAO_ROTA] != NULO)
-        {
-            i = ZERO;
+        int *combinacaoAtual = combinacoes[idxCombAtual];
 
-            while (combinacoes[melhorRota[POSICAO_ROTA] + i] != SEPARADOR)
+        for (int cidadeAtual = ZERO; cidadeAtual < qtdItensCadaCombinacao[indexAtual] - 1; cidadeAtual++)
+        {
+            demandaRota += distanciaCidades[combinacaoAtual[cidadeAtual]][combinacaoAtual[cidadeAtual + 1]];
+        }
+
+        if (demandaRota <= cargaCaminhao)
+        {
+            printf("PASSOU: \n");
+
+            for (int cidadeAtual = ZERO; cidadeAtual < qtdItensCadaCombinacao[indexAtual]; cidadeAtual++)
             {
-                printf("%d ", combinacoes[melhorRota[POSICAO_ROTA] + i]);
-                i++;
+                printf("%d ", combinacaoAtual[cidadeAtual]);
             }
 
             printf("\n");
-            demandaAtual -= melhorRota[TOTAL_ROTA];
-        }
 
-        numeroDeItemsAtual++;
+            melhoresRotas[rotasEncontradas++] = combinacoes[idxCombAtual];
+        }
     }
 
     /// ------------------------- FIM DO ESBOÇO CÓDIGO QUE CALCULA A ROTA MAIS OPTIMIZADA ------------------------------
@@ -263,7 +219,7 @@ double inicializaClock(void)
 
 
 /*
- * Finaliza o clock e calcular o tempo total.
+ * Finaliza o clock e calcula o tempo total.
  *
  * @param    tempoInicial    valor da primeira vez que a função "clock()" foi chamada.
  * @return                   valor calculado referente ao tempo entre o tempo inicial e o tempo final.
@@ -275,53 +231,34 @@ double calculaTempo(double tempoInicial)
 
 
 /*
- * Calcula a miníma dimensão para a matriz simétrica necessária para armazenar as distâncias.
- *
- * @param    qtdElementos    número de elementos.
- * @return                   dimensão para matriz simétrica.
- */
-int calculaDimensoesMatriz(int qtdElementos)
-{
-    int dimensaoMatriz = UM;
-    int sum = ZERO - UM;
-
-    while (sum < qtdElementos)
-    {
-        sum += dimensaoMatriz++;
-    }
-
-    return dimensaoMatriz;
-}
-
-
-/*
  * TESTING PURPOSES.
  */
-void imprimeCombinacoes(int *arrayCombinacoes, int totalCombinacoes)
+void imprimeCombinacoes(int **arrayCombinacoes, int totalCombinacoes, int *qtdItens, int *qtdCombItem)
 {
     printf("\nTodas as combinacoes possiveis: \n");
+    int soma = qtdCombItem[ZERO];
+    int indexAtual = ZERO;
+
     for (int i = ZERO; i < totalCombinacoes; i++)
     {
-        if (arrayCombinacoes[i] != SEPARADOR)
+        if (i == soma)
         {
-            printf("%d ", arrayCombinacoes[i]);
+            soma += qtdCombItem[++indexAtual];
         }
-        else
+
+        int *combinacaoAtual = arrayCombinacoes[i];
+
+        for (int j = ZERO; j < qtdItens[indexAtual]; j++)
         {
-            printf("\n");
+            printf("%d ", combinacaoAtual[j]);
         }
+
+        printf("\n");
     }
 
-    printf("\nArray completo: \n");
-    for (int i = ZERO; i < totalCombinacoes; i++)
-    {
-        if (arrayCombinacoes[i] == SEPARADOR)
-        {
-            printf("%c ", arrayCombinacoes[i]);
-        }
-        else
-        {
-            printf("%d ", arrayCombinacoes[i]);
-        }
-    }
+//    printf("\nArray completo: \n");
+//    for (int i = ZERO; i < totalCombinacoes; i++)
+//    {
+//        printf("%d ", arrayCombinacoes[i]);
+//    }
 }

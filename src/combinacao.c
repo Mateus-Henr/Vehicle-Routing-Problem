@@ -1,12 +1,14 @@
+#include <stdlib.h>
 #include "combinacao.h"
 
 #define ZERO 0
 #define UM 1
 #define ERRO (-1)
+#define DOIS 2
 
 // Protótipos de funções.
 
-void calculaPetala(int *array, int *data, int *arrayFinal, int *pIndexArray, int inicio, int fim, int index, int r);
+void calculaPetala(int *arr, int *data, int **arrFinal, int *pIdxArr, int inicio, int fim, int idx, int r);
 
 int fatorial(int numero);
 
@@ -19,7 +21,7 @@ int fatorial(int numero);
  *  @param   arrayFinal     ponteiro para o array que armazenará todas as possibilidades.
  *  @param   n              número de possibilidades para começar (o número de itens).
  */
-void combinacao(int *array, int *arrayFinal, int n)
+void combinacao(int *array, int **arrayFinal, int n)
 {
     int combinacaoAtual[n];
     int indexArray = ZERO;
@@ -36,36 +38,42 @@ void combinacao(int *array, int *arrayFinal, int n)
  * Calcula todas as possibilidades de combinações de um dado array de inteiros com uma quantidade de itens específica.
  * Utiliza recursão para tal cálculo.
  *
- * @param   array           ponteiro para o array que possui os itens.
+ * @param   arr             ponteiro para o array que possui os itens.
  * @param   data            ponteiro para o array que irá armazenar uma possibilidade por vez.
- * @param   arrayFinal      ponteiro para o array que armazenará todas as possibilidades.
- * @param   pIndexArray     ponteiro de um inteiro usado para controlar o index do array com todas as possibilidades.
+ * @param   arrFinal        ponteiro para o array que armazenará todas as possibilidades.
+ * @param   pIdxArr         ponteiro de um inteiro usado para controlar o index do array com todas as possibilidades.
  * @param   inicio          index do início do array que armazena uma possibilidade por vez.
  * @param   fim             index do fim do array que armazena uma possibilidade por vez.
- * @param   index           index atual do array que armazena uma possibilidade por vez.
- * @param    r              número de itens sendo escolhido.
+ * @param   idx             index atual do array que armazena uma possibilidade por vez.
+ * @param   r               número de itens sendo escolhido.
  */
-void calculaPetala(int *array, int *data, int *arrayFinal, int *pIndexArray, int inicio, int fim, int index, int r)
+void calculaPetala(int *arr, int *data, int **arrFinal, int *pIdxArr, int inicio, int fim, int idx, int r)
 {
-    if (index == r)
+    if (idx == r)
     {
-        for (int j = ZERO; j < r; j++)
+        int *combinacaoAtual = (int *) malloc((r + DOIS) * sizeof(int));
+
+        int j = ZERO;
+
+        combinacaoAtual[j] = ZERO;
+
+        for (j = ZERO; j < r; j++)
         {
-            arrayFinal[*pIndexArray] = data[j];
-            *pIndexArray = *pIndexArray + 1;
+            combinacaoAtual[j + UM] = data[j];
         }
 
-        // JUST FOR TESTING
-        arrayFinal[*pIndexArray] = SEPARADOR;
-        *pIndexArray = *pIndexArray + UM;
+        combinacaoAtual[j + DOIS] = ZERO;
+
+        arrFinal[*pIdxArr] = combinacaoAtual;
+        *pIdxArr = *pIdxArr + UM;
 
         return;
     }
 
-    for (int i = inicio; i <= fim && fim - i + UM >= r - index; i++)
+    for (int i = inicio; i <= fim && fim - i + UM >= r - idx; i++)
     {
-        data[index] = array[i];
-        calculaPetala(array, data, arrayFinal, pIndexArray, i + UM, fim, index + UM, r);
+        data[idx] = arr[i];
+        calculaPetala(arr, data, arrFinal, pIdxArr, i + UM, fim, idx + UM, r);
     }
 }
 
@@ -87,7 +95,7 @@ int calculaQtdElementos(int n)
 
     for (int i = n; i >= UM; i--)
     {
-        soma += calculaQtdCombinacoes(n, i) * i + calculaQtdCombinacoes(n, i);
+        soma += calculaQtdCombinacoes(n, i);
     }
 
     return soma;
