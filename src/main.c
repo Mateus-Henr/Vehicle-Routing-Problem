@@ -172,9 +172,9 @@ int main(void)
 
         int *combinacaoAtual = combinacoes[idxCombAtual];
 
-        for (int cidadeAtual = ZERO; cidadeAtual < qtdItensCadaCombinacao[indexAtual] - 1; cidadeAtual++)
+        for (int cidadeAtual = UM; cidadeAtual < qtdItensCadaCombinacao[indexAtual] - 1; cidadeAtual++)
         {
-            demandaRota += distanciaCidades[combinacaoAtual[cidadeAtual]][combinacaoAtual[cidadeAtual + 1]];
+            demandaRota += (int) cidades[combinacaoAtual[cidadeAtual] - 1].demanda;
         }
 
         if (demandaRota <= cargaCaminhao)

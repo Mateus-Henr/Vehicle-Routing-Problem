@@ -62,7 +62,7 @@ void calculaPetala(int *arr, int *data, int **arrFinal, int *pIdxArr, int inicio
             combinacaoAtual[j + UM] = data[j];
         }
 
-        combinacaoAtual[j + DOIS] = ZERO;
+        combinacaoAtual[j + UM] = ZERO;
 
         arrFinal[*pIdxArr] = combinacaoAtual;
         *pIdxArr = *pIdxArr + UM;
