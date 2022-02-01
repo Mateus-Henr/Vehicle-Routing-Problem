@@ -156,41 +156,129 @@ int main(void)
 
     printf("\nMELHORES CAMINHOS: \n");
 
-    int *melhoresRotas[qtdCombinacoes];
+//    int **melhoresRotas = (int **) malloc(qtdCombinacoes * sizeof(int *));
+    int *melhoresRotas[7];
+//    int *qtdDigitosCadaComb = (int *) calloc(qtdCidades, sizeof(int));
+//    int *qtdCombsDeCadaDigito = (int *) calloc(qtdCombinacoes, sizeof(int));
+    int qtdCombsDeCadaDigito[3] = {ZERO};
+    int qtdDigitosCadaComb[3] = {ZERO};
     int rotasEncontradas = ZERO;
     int trocaQtdDigitos = qtdCombinacoesItem[ZERO];
     int indexAtual = ZERO;
 
-    for (int idxCombAtual = ZERO; idxCombAtual < qtdCombinacoes; idxCombAtual++)
+    int posIndexCadaDigito = ZERO;
+
+    for (int qtdDigitosAtual = ZERO; qtdDigitosAtual < qtdCidades; qtdDigitosAtual++)
     {
-        int demandaRota = ZERO;
+        bool encontrou = false;
+        int qtdEncontradas = ZERO;
 
-        if (idxCombAtual == trocaQtdDigitos)
+        for (int qtdCombsDeUmDigito = ZERO; qtdCombsDeUmDigito < qtdCombinacoesItem[qtdDigitosAtual]; qtdCombsDeUmDigito++)
         {
-            trocaQtdDigitos += qtdCombinacoesItem[++indexAtual];
-        }
+            int *combinacaoAtual = combinacoes[indexAtual++];
+            int demandaRota = ZERO;
 
-        int *combinacaoAtual = combinacoes[idxCombAtual];
-
-        for (int cidadeAtual = UM; cidadeAtual < qtdItensCadaCombinacao[indexAtual] - 1; cidadeAtual++)
-        {
-            demandaRota += (int) cidades[combinacaoAtual[cidadeAtual] - 1].demanda;
-        }
-
-        if (demandaRota <= cargaCaminhao)
-        {
-            printf("PASSOU: \n");
-
-            for (int cidadeAtual = ZERO; cidadeAtual < qtdItensCadaCombinacao[indexAtual]; cidadeAtual++)
+            // Ignorando 0s, esse é o motivo de estarmos começando de 1 e terminando em qtd algarismos menos 1.
+            for (int qtdDigitosDaComb = UM; qtdDigitosDaComb < qtdItensCadaCombinacao[qtdDigitosAtual] - 1; qtdDigitosDaComb++)
             {
-                printf("%d ", combinacaoAtual[cidadeAtual]);
+                demandaRota += (int) cidades[combinacaoAtual[qtdDigitosDaComb] - 1].demanda;
             }
 
-            printf("\n");
+            if (demandaRota <= cargaCaminhao)
+            {
+                printf("PASSOU: \n");
 
-            melhoresRotas[rotasEncontradas++] = combinacoes[idxCombAtual];
+                for (int cidadeAtual = ZERO; cidadeAtual < qtdItensCadaCombinacao[qtdDigitosAtual]; cidadeAtual++)
+                {
+                    printf("%d ", combinacaoAtual[cidadeAtual]);
+                }
+
+                printf("\n");
+
+                qtdCombsDeCadaDigito[posIndexCadaDigito] = ++qtdEncontradas;
+                qtdDigitosCadaComb[posIndexCadaDigito] = qtdItensCadaCombinacao[qtdDigitosAtual];
+
+                melhoresRotas[rotasEncontradas++] = combinacaoAtual;
+                encontrou = true;
+            }
+        }
+
+        if (encontrou)
+        {
+            posIndexCadaDigito++;
         }
     }
+
+    indexAtual = ZERO;
+    int *rotaFinal[qtdCombinacoes];
+    int indexRotaFinal = ZERO;
+    int melhorDistanciaValor = ZERO;
+    int *melhorDistancia = NULL;
+
+    for (int qtdDigitosAtual = ZERO; qtdDigitosAtual < posIndexCadaDigito; qtdDigitosAtual++)
+    {
+        for (int multiploNoMsmDigito = ZERO; multiploNoMsmDigito < qtdCombsDeCadaDigito[qtdDigitosAtual]; multiploNoMsmDigito++)
+        {
+            bool cidadeJaVisitada = false;
+            for (int qtdCombsDeUmDigito = qtdDigitosAtual; qtdCombsDeUmDigito < qtdCombsDeCadaDigito[qtdDigitosAtual] + qtdDigitosAtual; qtdCombsDeUmDigito++)
+            {
+                int distanciaRota = ZERO;
+                cidadeJaVisitada = false;
+
+                for (int qtdDigitosDaComb = ZERO; qtdDigitosDaComb < qtdDigitosCadaComb[qtdDigitosAtual] - 1; qtdDigitosDaComb++)
+                {
+                    if (melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb] != ZERO)
+                    {
+                        if (cidades[melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb] - 1].foiVisitada)
+                        {
+                            cidadeJaVisitada = true;
+                            break;
+                        }
+                    }
+
+                    distanciaRota +=
+                            distanciaCidades[melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb]]
+                            [melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb + UM]];
+                    int a = melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb];
+                    int b = melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb + UM];
+                    int c = a + b;
+                }
+                printf("\n");
+
+                if (distanciaRota < melhorDistanciaValor && !cidadeJaVisitada || melhorDistancia == NULL && !cidadeJaVisitada)
+                {
+                    melhorDistanciaValor = distanciaRota;
+                    melhorDistancia = melhoresRotas[qtdCombsDeUmDigito];
+                }
+            }
+
+            if (!cidadeJaVisitada)
+            {
+                rotaFinal[indexRotaFinal++] = melhorDistancia;
+
+                for (int i = ZERO; i < indexRotaFinal; i++)
+                {
+                    for (int j = ZERO; j < qtdDigitosCadaComb[qtdDigitosAtual]; j++)
+                    {
+                        if (rotaFinal[i][j] != ZERO)
+                        {
+                            cidades[rotaFinal[i][j] - 1].foiVisitada = true;
+                        }
+
+                        printf("%d ", rotaFinal[i][j]);
+                    }
+
+                    printf("\n");
+                }
+
+                melhorDistanciaValor = ZERO;
+                melhorDistancia = NULL;
+
+                printf("FINAL\n");
+            }
+        }
+    }
+
 
     /// ------------------------- FIM DO ESBOÇO CÓDIGO QUE CALCULA A ROTA MAIS OPTIMIZADA ------------------------------
 
