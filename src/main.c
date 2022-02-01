@@ -210,17 +210,20 @@ int main(void)
     }
 
     indexAtual = ZERO;
+    int tamanhoArrayFinal = ZERO;
     int *rotaFinal[qtdCombinacoes];
     int indexRotaFinal = ZERO;
     int melhorDistanciaValor = ZERO;
     int *melhorDistancia = NULL;
+    int digitoAtual = ZERO;
+    int posicoesArray[qtdCidades];
 
     for (int qtdDigitosAtual = ZERO; qtdDigitosAtual < posIndexCadaDigito; qtdDigitosAtual++)
     {
-        for (int multiploNoMsmDigito = ZERO; multiploNoMsmDigito < qtdCombsDeCadaDigito[qtdDigitosAtual]; multiploNoMsmDigito++)
+        for (int multiploNoMsmDigito = digitoAtual; multiploNoMsmDigito < qtdCombsDeCadaDigito[qtdDigitosAtual] + digitoAtual; multiploNoMsmDigito++)
         {
             bool cidadeJaVisitada = false;
-            for (int qtdCombsDeUmDigito = qtdDigitosAtual; qtdCombsDeUmDigito < qtdCombsDeCadaDigito[qtdDigitosAtual] + qtdDigitosAtual; qtdCombsDeUmDigito++)
+            for (int qtdCombsDeUmDigito = digitoAtual; qtdCombsDeUmDigito < qtdCombsDeCadaDigito[qtdDigitosAtual] + digitoAtual; qtdCombsDeUmDigito++)
             {
                 int distanciaRota = ZERO;
                 cidadeJaVisitada = false;
@@ -239,11 +242,7 @@ int main(void)
                     distanciaRota +=
                             distanciaCidades[melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb]]
                             [melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb + UM]];
-                    int a = melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb];
-                    int b = melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb + UM];
-                    int c = a + b;
                 }
-                printf("\n");
 
                 if (distanciaRota < melhorDistanciaValor && !cidadeJaVisitada || melhorDistancia == NULL && !cidadeJaVisitada)
                 {
@@ -254,7 +253,9 @@ int main(void)
 
             if (!cidadeJaVisitada)
             {
+                posicoesArray[indexRotaFinal] = qtdDigitosCadaComb[qtdDigitosAtual];
                 rotaFinal[indexRotaFinal++] = melhorDistancia;
+                tamanhoArrayFinal = ZERO;
 
                 for (int i = ZERO; i < indexRotaFinal; i++)
                 {
@@ -265,18 +266,35 @@ int main(void)
                             cidades[rotaFinal[i][j] - 1].foiVisitada = true;
                         }
 
-                        printf("%d ", rotaFinal[i][j]);
+                        tamanhoArrayFinal++;
                     }
-
-                    printf("\n");
                 }
 
                 melhorDistanciaValor = ZERO;
                 melhorDistancia = NULL;
-
-                printf("FINAL\n");
             }
         }
+
+        digitoAtual += qtdCombsDeCadaDigito[qtdDigitosAtual];
+    }
+
+    int oCaminho[tamanhoArrayFinal + UM];
+    int index = ZERO;
+
+    for (int i = ZERO; i < indexRotaFinal; i++)
+    {
+        for (int j = ZERO; j < qtdDigitosCadaComb[i]; j++)
+        {
+            oCaminho[index++] = rotaFinal[i][j];
+        }
+    }
+
+    oCaminho[index] = ZERO;
+
+    printf("\nTHE FUCKING FINAL ROUTE: \n");
+    for (int i = ZERO; i < tamanhoArrayFinal + UM; i++)
+    {
+        printf("%d ", oCaminho[i]);
     }
 
 
@@ -289,7 +307,7 @@ int main(void)
     // Calculando tempo total de execução do programa.
     double tempoTotal = calculaTempo(inicioClock);
 
-    printf("\nTempo total = %0.2lf segundos.\n", tempoTotal);
+    printf("\n\nTempo total = %0.2lf segundos.\n", tempoTotal);
 
 
     return ZERO;
