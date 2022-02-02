@@ -83,7 +83,6 @@ int main(void)
     int *combinacoes[qtdCombinacoes];
 
     // Lendo as demandas de cada cidade.
-    printf("Demandas: \n");
     for (int i = ZERO; i < qtdCidades; i++)
     {
         struct Cidade cidade;
@@ -93,15 +92,12 @@ int main(void)
         cidades[i] = cidade;
         locaisParaCombinar[i] = (i + 1);
         somatorioDemandas += (int) cidade.demanda;
-        printf("Cidade %d = %d\n", (i + 1), cidade.demanda);
     }
 
     // Calculando a quantidade de caminhões.
     unsigned int qtdCaminhoes = somatorioDemandas / cargaCaminhao;
-    printf("\nQuantidade de caminhoes: %d\n", qtdCaminhoes);
 
     // Colocando valores do arquivo em uma matriz simétrica (Ci para Cj).
-    printf("\nPrintando matriz simetrica: \n");
     for (int i = ZERO; i < qtdCidades + 1; i++)
     {
         for (int j = ZERO; j < qtdCidades + 1; j++)
@@ -115,11 +111,7 @@ int main(void)
                 fscanf(pArquivo, "%d", &distanciaCidades[i][j]);
                 distanciaCidades[j][i] = distanciaCidades[i][j];
             }
-
-            printf("%02d ", distanciaCidades[i][j]);
         }
-
-        printf("\n");
     }
 
     // Fim das operações no arquivo.
@@ -148,13 +140,11 @@ int main(void)
     combinacao(locaisParaCombinar, combinacoes, qtdCidades);
 
     // Imprimindo combinações.
-    imprimeCombinacoes(combinacoes, qtdCombinacoes, qtdItensCadaCombinacao, qtdCombinacoesItem);
+    // imprimeCombinacoes(combinacoes, qtdCombinacoes, qtdItensCadaCombinacao, qtdCombinacoesItem);
 
 
 
     /// ---------------------------- ESBOÇO CÓDIGO QUE CALCULA A ROTA MAIS OPTIMIZADA ----------------------------------
-
-    printf("\nMELHORES CAMINHOS: \n");
 
     int *melhoresRotas[qtdCombinacoes];
     int qtdDigitosCadaComb[qtdCidades];
@@ -182,15 +172,6 @@ int main(void)
 
             if (demandaRota <= cargaCaminhao)
             {
-                printf("PASSOU: \n");
-
-                for (int cidadeAtual = ZERO; cidadeAtual < qtdItensCadaCombinacao[qtdDigitosAtual]; cidadeAtual++)
-                {
-                    printf("%d ", combinacaoAtual[cidadeAtual]);
-                }
-
-                printf("\n");
-
                 qtdCombsDeCadaDigito[posIndexCadaDigito] = ++qtdEncontradas;
                 qtdDigitosCadaComb[posIndexCadaDigito] = qtdItensCadaCombinacao[qtdDigitosAtual];
 
@@ -285,7 +266,7 @@ int main(void)
         }
     }
 
-    printf("\nTHE FUCKING FINAL ROUTE: \n");
+    printf("THE FUCKING FINAL ROUTE: \n");
     for (int i = ZERO; i < tamanhoArrayFinal; i++)
     {
         printf("%d ", oCaminho[i]);
