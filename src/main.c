@@ -29,6 +29,8 @@ double inicializaClock(void);
 
 double calculaTempo(double tempoInicial);
 
+int calculaQtdElementosMatriz(int n);
+
 void imprimeCombinacoes(int **arrayCombinacoes, int totalCombinacoes, int *qtdItens, int *qtdCombItem);
 
 
@@ -79,7 +81,7 @@ int main(void)
     // Array com os elementos para fazer combinações.
     int locaisParaCombinar[qtdCidades];
 
-    int qtdCombinacoes = calculaQtdElementos(qtdCidades);
+    int qtdCombinacoes = calculaQtdCombinacoesTotal(qtdCidades);
     int *combinacoes[qtdCombinacoes];
 
     // Lendo as demandas de cada cidade.
@@ -97,21 +99,29 @@ int main(void)
     // Calculando a quantidade de caminhões.
     unsigned int qtdCaminhoes = somatorioDemandas / cargaCaminhao;
 
+    int qtdElementos = calculaQtdElementosMatriz(qtdCidades);
+
     // Colocando valores do arquivo em uma matriz simétrica (Ci para Cj).
-    for (int i = ZERO; i < qtdCidades + 1; i++)
+    for (int k = UM; k <= qtdElementos; k++)
     {
-        for (int j = ZERO; j < qtdCidades + 1; j++)
+        int i = ZERO;
+        int j = ZERO;
+
+        fscanf(pArquivo, "%d", &i);
+        fscanf(pArquivo, "%d", &j);
+        fscanf(pArquivo, "%d", &distanciaCidades[i][j]);
+        distanciaCidades[j][i] = distanciaCidades[i][j];
+    }
+
+    // Imprime a matriz
+    for (int i = ZERO; i < qtdCidades; i++)
+    {
+        for (int j = ZERO; j < qtdCidades; i++)
         {
-            if (i == j)
-            {
-                distanciaCidades[i][j] = ZERO;
-            }
-            else if (i <= j)
-            {
-                fscanf(pArquivo, "%d", &distanciaCidades[i][j]);
-                distanciaCidades[j][i] = distanciaCidades[i][j];
-            }
+            printf("%d ", distanciaCidades[i][j]);
         }
+
+        printf("\n");
     }
 
     // Fim das operações no arquivo.
@@ -266,7 +276,7 @@ int main(void)
         }
     }
 
-    printf("THE FUCKING FINAL ROUTE: \n");
+    printf("\nTHE FUCKING FINAL ROUTE: \n");
     for (int i = ZERO; i < tamanhoArrayFinal; i++)
     {
         printf("%d ", oCaminho[i]);
@@ -286,6 +296,25 @@ int main(void)
 
 
     return ZERO;
+}
+
+
+/*
+ * Calcula quantos elementos o usuário pode adicionar na matriz simétrica.
+ *
+ * @param    n    quantidade de linhas da matriz.
+ * @return        quantidade de elementos que o usuário pode adicionar na matriz simétrica
+ */
+int calculaQtdElementosMatriz(int n)
+{
+    int soma = ZERO;
+
+    for (int i = n; i >= UM; i--)
+    {
+        soma += i;
+    }
+
+    return soma;
 }
 
 

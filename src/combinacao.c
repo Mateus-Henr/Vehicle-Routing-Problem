@@ -84,7 +84,7 @@ void calculaPetala(int *arr, int *data, int **arrFinal, int *pIdxArr, int inicio
  * @param    n    número de possibilidades para começar.
  * @return        quantidade de combinação para os dados parâmetros. Em caso de valores inválidos, -1.
  */
-int calculaQtdElementos(int n)
+int calculaQtdCombinacoesTotal(int n)
 {
     if (n < ZERO)
     {
