@@ -156,14 +156,10 @@ int main(void)
 
     printf("\nMELHORES CAMINHOS: \n");
 
-//    int **melhoresRotas = (int **) malloc(qtdCombinacoes * sizeof(int *));
-    int *melhoresRotas[7];
-//    int *qtdDigitosCadaComb = (int *) calloc(qtdCidades, sizeof(int));
-//    int *qtdCombsDeCadaDigito = (int *) calloc(qtdCombinacoes, sizeof(int));
-    int qtdCombsDeCadaDigito[3] = {ZERO};
-    int qtdDigitosCadaComb[3] = {ZERO};
+    int *melhoresRotas[qtdCombinacoes];
+    int qtdDigitosCadaComb[qtdCidades];
+    int qtdCombsDeCadaDigito[qtdCidades];
     int rotasEncontradas = ZERO;
-    int trocaQtdDigitos = qtdCombinacoesItem[ZERO];
     int indexAtual = ZERO;
 
     int posIndexCadaDigito = ZERO;
@@ -237,18 +233,12 @@ int main(void)
                         if (cidades[melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb] - 1].foiVisitada)
                         {
                             cidadeJaVisitada = true;
-//                            break;
                         }
                     }
 
                     distanciaRota +=
                             distanciaCidades[melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb]]
                             [melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb + UM]];
-
-//                    printf("%d %d = %d\n", melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb],
-//                           melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb + UM],
-//                           distanciaCidades[melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb]]
-//                           [melhoresRotas[qtdCombsDeUmDigito][qtdDigitosDaComb + UM]]);
                 }
 
                 if (distanciaRota < melhorDistanciaValor && !cidadeJaVisitada || melhorDistancia == NULL && !cidadeJaVisitada)
@@ -258,7 +248,6 @@ int main(void)
                     encontrou = true;
                 }
             }
-//            printf("\n");
 
             if (encontrou)
             {
@@ -366,10 +355,4 @@ void imprimeCombinacoes(int **arrayCombinacoes, int totalCombinacoes, int *qtdIt
 
         printf("\n");
     }
-
-//    printf("\nArray completo: \n");
-//    for (int i = ZERO; i < totalCombinacoes; i++)
-//    {
-//        printf("%d ", arrayCombinacoes[i]);
-//    }
 }
