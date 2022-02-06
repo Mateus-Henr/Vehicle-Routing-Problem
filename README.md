@@ -31,8 +31,8 @@ University: [UFV-Florestal](https://www.novoscursos.ufv.br/graduacao/caf/ccp/www
 
 # Files:
 ### Folder "src":
-* fazCombinacoes.h
-* fazCombinacoes.c
+* permutacao.h
+* permutacao.c
 * cidade.h
 * cidade.c
 * main.c
