@@ -6,11 +6,12 @@ typedef struct Cidade
     bool foiVisitada;
 } Cidade;
 
-bool foiVisitada(struct Cidade cidade);
 
 // Getters e Setters
 
 unsigned int getDemanda(struct Cidade cidade);
+
+bool getFoiVisitada(struct Cidade cidade);
 
 void setDemanda(struct Cidade cidade, unsigned int novaDemanda);
 

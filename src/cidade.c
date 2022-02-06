@@ -1,13 +1,13 @@
 #include "cidade.h"
 
-bool foiVisitada(struct Cidade cidade)
-{
-    return cidade.foiVisitada;
-}
-
 unsigned int getDemanda(struct Cidade cidade)
 {
     return cidade.demanda;
+}
+
+bool getFoiVisitada(struct Cidade cidade)
+{
+    return cidade.foiVisitada;
 }
 
 void setDemanda(struct Cidade cidade, unsigned int novaDemanda)
