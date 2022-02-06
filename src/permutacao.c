@@ -12,23 +12,24 @@
 // Variáveis globais.
 
 bool foiInicializado = false;
-int cargaCaminhao = ZERO;
+int capacidadeCaminhao = ZERO;
 struct Cidade *cidades = NULL;
 int **distanciaCidades = NULL;
 
 
 // Protótipos de funções.
 
-void calculaPetala(int *arr, int *data, int inicio, int fim, int idx, int r, int *pMelhorDist, int *melhorDistValor);
+void calculaPetala(int *arr, int *data, int inicio, int fim, int idx, int r, int *melhorDist, int *pMelhorDistValor);
 
-void fazPermutacoes(int *data, int tamanho, int n, int *pMelhorDist, int *melhorDistValor);
+void fazPermutacoes(int *data, int n, int tamanho, int *melhorDist, int *pMelhorDistValor);
 
 void troca(int *a, int *b);
+
+void checaPermutacao(const int *permutacao, int tamanho, int *melhorDist, int *pMelhorDistValor);
 
 int fatorial(int numero);
 
 void liberaMemoria(int numCidades);
-
 
 
 /*
@@ -60,7 +61,7 @@ void inicializa(struct Cidade *arrayCidades, int numCidades, int **matrizDistanc
         cidades[i] = arrayCidades[i];
     }
 
-    cargaCaminhao = caminhao;
+    capacidadeCaminhao = caminhao;
     foiInicializado = true;
 }
 
@@ -84,14 +85,14 @@ void fazCombinacoes(int *itens, int *rotaFinal, int *pIndexArr, int qtdItens)
     int combinacaoAtual[qtdItens];
 
     int melhorDistancia = ZERO;
-    int *melhorV = &melhorDistancia;
+    int *pMelhorDistValor = &melhorDistancia;
 
-    int melhor[qtdItens];
+    int melhorDist[qtdItens];
     int qtdDigitosAtual = qtdItens;
 
     while (qtdDigitosAtual)
     {
-        calculaPetala(itens, combinacaoAtual, ZERO, qtdItens - UM, ZERO, qtdDigitosAtual, melhor, melhorV);
+        calculaPetala(itens, combinacaoAtual, ZERO, qtdItens - UM, ZERO, qtdDigitosAtual, melhorDist, pMelhorDistValor);
 
         // Se encontrar cidade que passe nas condições.
         if (melhorDistancia != ZERO)
@@ -105,20 +106,21 @@ void fazCombinacoes(int *itens, int *rotaFinal, int *pIndexArr, int qtdItens)
             // Adiciona cidades encontrados no itens final.
             for (int i = ZERO; i < qtdDigitosAtual; i++)
             {
-                rotaFinal[(*pIndexArr)++] = melhor[i];
-                cidades[melhor[i]].foiVisitada = true;
+                rotaFinal[(*pIndexArr)++] = melhorDist[i];
+                cidades[melhorDist[i]].foiVisitada = true;
             }
 
             // Adiciona zero no final da permutação.
             rotaFinal[(*pIndexArr)++] = ZERO;
 
-            // Checa a mesmo digito novamente. Não optimizado.
+            // Checa a mesmo digito novamente para ver se há mais permutações com o mesmo número de digitos.
             continue;
         }
 
         qtdDigitosAtual--;
     }
 
+    // Liberando a memória sendo usada pelas variáveis globais.
     liberaMemoria(qtdItens);
 }
 
@@ -133,10 +135,10 @@ void fazCombinacoes(int *itens, int *rotaFinal, int *pIndexArr, int qtdItens)
  * @param    fim                 index do fim do array que armazena uma possibilidade por vez.
  * @param    idx                 index atual do array que armazena uma possibilidade por vez.
  * @param    r                   número de itens sendo escolhido.
- * @param    pMelhorDist         ponteiro para array que contém melhor permutação encontrada até então.
- * @param    melhorDistValor     ponteiro para valor da distância total da melhor permutação encontrada até então.
+ * @param    melhorDist          ponteiro para array que contém melhor permutação encontrada até então.
+ * @param    pMelhorDistValor    ponteiro para valor da distância total da melhor permutação encontrada até então.
  */
-void calculaPetala(int *arr, int *data, int inicio, int fim, int idx, int r, int *pMelhorDist, int *melhorDistValor)
+void calculaPetala(int *arr, int *data, int inicio, int fim, int idx, int r, int *melhorDist, int *pMelhorDistValor)
 {
     // Entra nessa condição quando tiver uma combinação pronta.
     if (idx == r)
@@ -151,7 +153,7 @@ void calculaPetala(int *arr, int *data, int inicio, int fim, int idx, int r, int
         }
 
         // Realizando permutações a partir da combinação encontrada.
-        fazPermutacoes(novoData, r, r, pMelhorDist, melhorDistValor);
+        fazPermutacoes(novoData, r, r, melhorDist, pMelhorDistValor);
 
         return;
     }
@@ -159,84 +161,42 @@ void calculaPetala(int *arr, int *data, int inicio, int fim, int idx, int r, int
     for (int i = inicio; i <= fim && fim - i + UM >= r - idx; i++)
     {
         data[idx] = arr[i];
-        calculaPetala(arr, data, i + UM, fim, idx + UM, r, pMelhorDist, melhorDistValor);
+        calculaPetala(arr, data, i + UM, fim, idx + UM, r, melhorDist, pMelhorDistValor);
     }
 }
 
 
 /*
- * Usa a permutação de Heap para gerar todas as permutações.
+ * Usa a permutação de Heap para gerar todas as permutações de forma recursiva.
  *
  * @param    data                array para ser permutado.
- * @param    tamanho             tamanho do array (será mudado).
  * @param    n                   tamanho do array.
- * @param    pMelhorDist         ponteiro para array que contém melhor permutação encontrada até então.
- * @param    melhorDistValor     ponteiro para valor da distância total da melhor permutação encontrada até então.
+ * @param    tamanho             tamanho do array.
+ * @param    melhorDist          ponteiro para array que contém melhor permutação encontrada até então.
+ * @param    pMelhorDistValor    ponteiro para valor da distância total da melhor permutação encontrada até então.
  */
-void fazPermutacoes(int *data, int tamanho, int n, int *pMelhorDist, int *melhorDistValor)
+void fazPermutacoes(int *data, int n, int tamanho, int *melhorDist, int *pMelhorDistValor)
 {
     // Entra nessa condição se tiver uma permutação pronta.
-    if (tamanho == UM)
+    if (n == UM)
     {
-        unsigned int demandaTotal = ZERO;
-
-        for (int i = ZERO; i < n; i++)
-        {
-            // Associando com index em cidades.
-            int cidadeAtual = data[i];
-
-            if (cidades[cidadeAtual].foiVisitada)
-            {
-                return;
-            }
-
-            demandaTotal += cidades[cidadeAtual].demanda;
-        }
-
-        bool otimizaRota = (demandaTotal <= cargaCaminhao);
-
-        if ((demandaTotal % cargaCaminhao) == ZERO)
-        {
-            otimizaRota = (demandaTotal == cargaCaminhao);
-        }
-
-        if (otimizaRota)
-        {
-            int totalDistance = ZERO;
-
-            totalDistance = distanciaCidades[ZERO][data[ZERO]];
-            for (int i = ZERO; i < n - UM; i++)
-            {
-                totalDistance += distanciaCidades[data[i]][data[i + UM]];
-            }
-            totalDistance += distanciaCidades[ZERO][data[n - UM]];
-
-
-            if (totalDistance < *melhorDistValor || *melhorDistValor == ZERO)
-            {
-                *melhorDistValor = totalDistance;
-
-                for (int i = ZERO; i < n; i++)
-                {
-                    pMelhorDist[i] = data[i];
-                }
-            }
-        }
+        // Checa se a permutação feita é melhor que as anteriores.
+        checaPermutacao(data, tamanho, melhorDist, pMelhorDistValor);
 
         return;
     }
 
-    for (int i = ZERO; i < tamanho; i++)
+    for (int i = ZERO; i < n; i++)
     {
-        fazPermutacoes(data, tamanho - UM, n, pMelhorDist, melhorDistValor);
+        fazPermutacoes(data, n - UM, tamanho, melhorDist, pMelhorDistValor);
 
-        if (tamanho % DOIS == UM)
+        if (n % DOIS == UM)
         {
-            troca(data, data + (tamanho - UM));
+            troca(data, data + (n - UM));
         }
         else
         {
-            troca(data + i, data + (tamanho - UM));
+            troca(data + i, data + (n - UM));
         }
     }
 }
@@ -253,6 +213,73 @@ void troca(int *a, int *b)
     int temp = *a;
     *a = *b;
     *b = temp;
+}
+
+
+/*
+ * Checa se a permutação atual dada é melhor que as permutações anteriores.
+ *
+ * @param    permutacao           ponteiro para o array com a permutação.
+ * @param    tamanho              tamanho do array com a permutação.
+ * @param    melhorDist           ponteiro para array que contém melhor permutação encontrada até então.
+ * @param    pMelhorDistValor     ponteiro para valor da distância total da melhor permutação encontrada até então.
+ */
+void checaPermutacao(const int *permutacao, int tamanho, int *melhorDist, int *pMelhorDistValor)
+{
+    unsigned int demandaTotal = ZERO;
+
+    for (int i = ZERO; i < tamanho; i++)
+    {
+        // Associando com index em cidades.
+        int cidadeAtual = permutacao[i];
+
+        // Checa se tem alguma cidade que já foi visitada na permutação, caso haja retorna, ignorando a permutação.
+        if (cidades[cidadeAtual].foiVisitada)
+        {
+            return;
+        }
+
+        demandaTotal += cidades[cidadeAtual].demanda;
+    }
+
+    // Essa variável é usada para determinar se dada a demanda, temos que procurar por uma permutação igual ou maior.
+    // Dessa forma conseguimos suprir a quantidade de caminhões necessários.
+    // Isso conserta o "bug" de termos uma rota mais optimizada, porém a mesma iria ultrapassar a quantidade de caminhões que possuímos.
+    bool otimizaRota = (demandaTotal <= capacidadeCaminhao);
+
+    if ((demandaTotal % capacidadeCaminhao) == ZERO)
+    {
+        otimizaRota = (demandaTotal == capacidadeCaminhao);
+    }
+
+    if (otimizaRota)
+    {
+        int distanciaTotal = ZERO;
+
+        // Calcula a distância do depósito até a primeira cidade.
+        distanciaTotal = distanciaCidades[ZERO][permutacao[ZERO]];
+
+        // Calcula a distância entre as cidades na combinação.
+        for (int i = ZERO; i < tamanho - UM; i++)
+        {
+            distanciaTotal += distanciaCidades[permutacao[i]][permutacao[i + UM]];
+        }
+
+        // Calcula a distância da última cidade até o depósito.
+        distanciaTotal += distanciaCidades[ZERO][permutacao[tamanho - UM]];
+
+        // Checa se a permutação é melhor que as anteriores.
+        // Também entra na condição se for a primeira permutação que passou nas condições anteriores.
+        if (distanciaTotal < *pMelhorDistValor || *pMelhorDistValor == ZERO)
+        {
+            *pMelhorDistValor = distanciaTotal;
+
+            for (int i = ZERO; i < tamanho; i++)
+            {
+                melhorDist[i] = permutacao[i];
+            }
+        }
+    }
 }
 
 
@@ -289,6 +316,11 @@ int fatorial(int numero)
 }
 
 
+/*
+ * Libera memória das estruturas globais alocadas dinamicamente.
+ *
+ * @param    numCidades    número de cidades.
+ */
 void liberaMemoria(int numCidades)
 {
     // Retorna caso as variáveis globais não foram inicializadas.

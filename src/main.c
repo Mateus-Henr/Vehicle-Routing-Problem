@@ -136,22 +136,24 @@ int main(void)
     // Cria array para rota final baseado na maior capacidade que ele possa ter.
     int rotaFinal[calculaQtdCombinacoes(qtdCidades, UM) * (qtdCidades - UM)];
 
-    // Definindo variável e ponteiro para ela para ser modificada dentro de um método.
+    // Definindo variável e ponteiro para ela para ser modificada dentro de uma função.
     int pIdxValor = ZERO;
     int *pIdxArr = &pIdxValor;
 
     // Inicializa variáveis globais no outro arquivo.
     inicializa(cidades, qtdCidades, distanciaCidades, cargaCaminhao);
 
-    // Chama método que faz todas as permutações a partir de combinações.
+    // Chama função que faz todas as permutações a partir de combinações.
     fazCombinacoes(itens, rotaFinal, pIdxArr, qtdCidades - UM);
 
+    // Printando melhor rota encontrada.
     printf("THE FUCKING BEST ROUTE: \n");
     for (int i = ZERO; i < pIdxValor; i++)
     {
         printf("%d ", rotaFinal[i]);
     }
 
+    // Libera espaço na memória alocada por estruturas.
     cleanUp(cidades, distanciaCidades, qtdCidades);
 
     /// ------------------------------------- FIM DO PROCESSAMENTO DOS DADOS -------------------------------------------
@@ -190,7 +192,7 @@ double calculaTempo(double tempoInicial)
 
 
 /*
- * Libera espaço na memória criado para as estruturas.
+ * Libera espaço na memória criado para estruturas.
  *
  * @param    cidades             ponteiro para o array que contém as estruturas Cidade.
  * @param    distanciaCidades    ponteiro para matriz que contém as distâncias entre as cidades.
