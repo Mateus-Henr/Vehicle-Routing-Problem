@@ -38,9 +38,9 @@ void liberaMemoria(int numCidades);
  * @param    arrayCidades       ponteiro para array que contém as estruturas cidades.
  * @param    numCidades         a quantidade de cidades.
  * @param    matrizDistancias   ponteiro para a matriz de distâncias entre as cidades.
- * @param    caminhao           a capacidade do caminhão.
+ * @param    cargaCaminhao      a capacidade do caminhão.
  */
-void inicializa(struct Cidade *arrayCidades, int numCidades, int **matrizDistancias, int caminhao)
+void inicializa(struct Cidade *arrayCidades, int numCidades, int **matrizDistancias, int cargaCaminhao)
 {
     distanciaCidades = (int **) malloc(numCidades * sizeof(int *));
 
@@ -61,7 +61,7 @@ void inicializa(struct Cidade *arrayCidades, int numCidades, int **matrizDistanc
         cidades[i] = arrayCidades[i];
     }
 
-    capacidadeCaminhao = caminhao;
+    capacidadeCaminhao = cargaCaminhao;
     foiInicializado = true;
 }
 
