@@ -19,15 +19,13 @@ int **distanciaCidades = NULL;
 
 // Protótipos de funções.
 
-void calculaPetala(int *arr, int *data, int inicio, int fim, int idx, int r, int *melhorDist, int *pMelhorDistValor);
+void fazCombinacoes(int *arr, int *data, int inicio, int fim, int idx, int r, int *melhorDist, int *pMelhorDistValor);
 
 void fazPermutacoes(int *data, int n, int tamanho, int *melhorDist, int *pMelhorDistValor);
 
 void troca(int *a, int *b);
 
 void checaPermutacao(const int *permutacao, int tamanho, int *melhorDist, int *pMelhorDistValor);
-
-int fatorial(int numero);
 
 void liberaMemoria(int numCidades);
 
@@ -67,14 +65,14 @@ void inicializa(struct Cidade *arrayCidades, int numCidades, int **matrizDistanc
 
 
 /*
- *  Calcula todas as possibilidades de combinações de um dado itens de inteiros para todas as variações de quantidade
- *  de itens.
+ *  Calcula todas as possibilidades de permutações de combinações de um dado array de inteiros para todas as variações de quantidade
+ *  de itens. Possui como objetivo encontrar a melhor rota.
  *
  *  @param   itens          ponteiro para o array que possui os itens.
  *  @param   rotaFinal      ponteiro para o array que armazenará a rota final (a melhor rota encontrada).
  *  @param   qtdItens       número de possibilidades para começar (o número de itens).
  */
-void fazCombinacoes(int *itens, int *rotaFinal, int *pIndexArr, int qtdItens)
+void encontraMelhorRota(int *itens, int *rotaFinal, int *pIndexArr, int qtdItens)
 {
     // Retorna caso as variáveis globais não foram inicializadas.
     if (!foiInicializado)
@@ -92,7 +90,7 @@ void fazCombinacoes(int *itens, int *rotaFinal, int *pIndexArr, int qtdItens)
 
     while (qtdDigitosAtual)
     {
-        calculaPetala(itens, combinacaoAtual, ZERO, qtdItens - UM, ZERO, qtdDigitosAtual, melhorDist, pMelhorDistValor);
+        fazCombinacoes(itens, combinacaoAtual, ZERO, qtdItens - UM, ZERO, qtdDigitosAtual, melhorDist, pMelhorDistValor);
 
         // Se encontrar cidade que passe nas condições.
         if (melhorDistancia != ZERO)
@@ -113,7 +111,7 @@ void fazCombinacoes(int *itens, int *rotaFinal, int *pIndexArr, int qtdItens)
             // Adiciona zero no final da permutação.
             rotaFinal[(*pIndexArr)++] = ZERO;
 
-            // Checa a mesmo digito novamente para ver se há mais permutações com o mesmo número de digitos.
+            // Checa a mesmo digito novamente para ver se há mais permutações com o mesmo número de dígitos.
             continue;
         }
 
@@ -138,7 +136,7 @@ void fazCombinacoes(int *itens, int *rotaFinal, int *pIndexArr, int qtdItens)
  * @param    melhorDist          ponteiro para array que contém melhor permutação encontrada até então.
  * @param    pMelhorDistValor    ponteiro para valor da distância total da melhor permutação encontrada até então.
  */
-void calculaPetala(int *arr, int *data, int inicio, int fim, int idx, int r, int *melhorDist, int *pMelhorDistValor)
+void fazCombinacoes(int *arr, int *data, int inicio, int fim, int idx, int r, int *melhorDist, int *pMelhorDistValor)
 {
     // Entra nessa condição quando tiver uma combinação pronta.
     if (idx == r)
@@ -161,7 +159,7 @@ void calculaPetala(int *arr, int *data, int inicio, int fim, int idx, int r, int
     for (int i = inicio; i <= fim && fim - i + UM >= r - idx; i++)
     {
         data[idx] = arr[i];
-        calculaPetala(arr, data, i + UM, fim, idx + UM, r, melhorDist, pMelhorDistValor);
+        fazCombinacoes(arr, data, i + UM, fim, idx + UM, r, melhorDist, pMelhorDistValor);
     }
 }
 
@@ -244,7 +242,7 @@ void checaPermutacao(const int *permutacao, int tamanho, int *melhorDist, int *p
 
     // Essa variável é usada para determinar se dada a demanda, temos que procurar por uma permutação igual ou maior.
     // Dessa forma conseguimos suprir a quantidade de caminhões necessários.
-    // Isso conserta o "bug" de termos uma rota mais optimizada, porém a mesma iria ultrapassar a quantidade de caminhões que possuímos.
+    // Isso conserta o erro de termos uma rota mais optimizada, porém a mesma iria ultrapassar a quantidade de caminhões que possuímos.
     bool otimizaRota = (demandaTotal <= capacidadeCaminhao);
 
     if ((demandaTotal % capacidadeCaminhao) == ZERO)
@@ -280,39 +278,6 @@ void checaPermutacao(const int *permutacao, int tamanho, int *melhorDist, int *p
             }
         }
     }
-}
-
-
-/*
- * Calcula a quantidade de combinações possíveis usando a seguinte fórmula:
- *  n! / (r! (n - r)!)
- *
- * @param    n    número de possibilidades para começar (o número de itens).
- * @param    r    número de itens sendo escolhido.
- * @return        número de combinações possíveis pelos dados parâmetros.
- */
-int calculaQtdCombinacoes(int n, int r)
-{
-    return fatorial(n) / (fatorial(r) * fatorial(n - r));
-}
-
-
-/*
- * Calcula o fatorial de um número.
- *
- * @param   numero   o número para ser calculado o fatorial.
- * @return           o fatorial do número dado.
- */
-int fatorial(int numero)
-{
-    int soma = UM;
-
-    for (int i = UM; i <= numero; i++)
-    {
-        soma *= i;
-    }
-
-    return soma;
 }
 
 

@@ -3,21 +3,28 @@
 #include <stddef.h>
 #include <time.h>
 #include <stdbool.h>
+#include <string.h>
+#include <limits.h>
 
 #include "permutacao.h"
 
 // Varia conforme o sistema operacional.
 #if defined WIN32 || defined _WIN32 || defined __CYGWIN__
-#define PATH_ARQUIVO "..\\arquivos\\text.txt"
+#define PATH_ARQUIVO "..\\arquivos\\"
 #else
-#define PATH_ARQUIVO "../arquivos/text.txt" // Edite caso você estiver em outro plataforma que não seja Windows.
+#define PATH_ARQUIVO "../arquivos/" // Edite caso você estiver em outro plataforma que não seja Windows.
 #endif
 
 #define ZERO 0
 #define UM 1
 #define DOIS 2
+#define TRES 3
 #define ERRO (-1)
 #define ERRO_ABRIR_ARQUIVO "\nErro ao tentar abrir o arquivo.\n"
+#define RECEBE_NOME_ARQUIVO "Digite o nome do arquivo: \nOBS: O arquivo deve estar na pasta 'arquivos'.\n"
+#define QTD_CAMINHOES "\nQuantidade de caminhoes: %d.\n"
+#define MELHOR_ROTA "\nMELHOR ROTA ENCONTRADA: \n"
+#define TEMPO_TOTAL "\n\nTempo total = %0.4lf segundos.\n"
 
 
 // Protótipos de funções.
@@ -36,17 +43,37 @@ void cleanUp(struct Cidade *cidades, int **distanciaCidades, int qtdCidades);
  */
 int main(void)
 {
+
+    /// --------------------------------------- CRIANDO CAMINHO PARA ARQUIVO -------------------------------------------
+
+    // Inicializando ponteiro do arquivo.
+    FILE *pArquivo = NULL;
+
+    // Inicializando variável para o nome do arquivo.
+    char nomeArquivo[CHAR_MAX];
+
+    // Lendo nome do arquivo do usuário.
+    printf(RECEBE_NOME_ARQUIVO);
+    scanf("%s", nomeArquivo);
+
+    // Calculando tamanho do caminho para o arquivo. Adicionando um para o null terminator em Strings.
+    char caminhoArquivo[strlen(PATH_ARQUIVO) + strlen(nomeArquivo) + UM];
+
+    // Juntando nome do arquivo com caminho para o arquivo.
+    strcpy(caminhoArquivo, PATH_ARQUIVO);
+    strcat(caminhoArquivo, nomeArquivo);
+
+    /// ------------------------------------ FIM CRIANDO CAMINHO PARA ARQUIVO ------------------------------------------
+
+
     // Inicializando o clock.
     double inicioClock = inicializaClock();
 
 
     /// ------------------------------------------- OPERAÇÕES NO ARQUIVO -----------------------------------------------
 
-    // Inicializando ponteiro do arquivo.
-    FILE *pArquivo = NULL;
-
     // Abrindo arquivo.
-    pArquivo = fopen(PATH_ARQUIVO, "r");
+    pArquivo = fopen(caminhoArquivo, "r");
 
     // Lidando com caso que o arquivo não é encontrado.
     if (!pArquivo)
@@ -102,6 +129,7 @@ int main(void)
 
     // Calculando a quantidade de caminhões.
     unsigned int qtdCaminhoes = somatorioDemandas / cargaCaminhao;
+    printf(QTD_CAMINHOES, qtdCaminhoes);
 
     // Colocando valores do arquivo em uma matriz simétrica.
     for (int i = ZERO; i < qtdCidades; i++)
@@ -134,7 +162,7 @@ int main(void)
     /// ----------------------------------------- PROCESSAMENTO DOS DADOS ----------------------------------------------
 
     // Cria array para rota final baseado na maior capacidade que ele possa ter.
-    int rotaFinal[calculaQtdCombinacoes(qtdCidades, UM) * (qtdCidades - UM)];
+    int rotaFinal[(qtdCidades - UM) * TRES];
 
     // Definindo variável e ponteiro para ela para ser modificada dentro de uma função.
     int pIdxValor = ZERO;
@@ -144,10 +172,10 @@ int main(void)
     inicializa(cidades, qtdCidades, distanciaCidades, cargaCaminhao);
 
     // Chama função que faz todas as permutações a partir de combinações.
-    fazCombinacoes(itens, rotaFinal, pIdxArr, qtdCidades - UM);
+    encontraMelhorRota(itens, rotaFinal, pIdxArr, qtdCidades - UM);
 
     // Printando melhor rota encontrada.
-    printf("THE FUCKING BEST ROUTE: \n");
+    printf(MELHOR_ROTA);
     for (int i = ZERO; i < pIdxValor; i++)
     {
         printf("%d ", rotaFinal[i]);
@@ -162,7 +190,7 @@ int main(void)
     // Calculando tempo total de execução do programa.
     double tempoTotal = calculaTempo(inicioClock);
 
-    printf("\n\nTempo total = %0.2lf segundos.\n", tempoTotal);
+    printf(TEMPO_TOTAL, tempoTotal);
 
 
     return ZERO;
