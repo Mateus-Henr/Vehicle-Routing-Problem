@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <limits.h>
+#include <math.h>
 
 #include "permutacao.h"
 
@@ -128,7 +129,7 @@ int main(void)
     }
 
     // Calculando a quantidade de caminhões.
-    unsigned int qtdCaminhoes = somatorioDemandas / cargaCaminhao;
+    unsigned int qtdCaminhoes = (unsigned int) ceil((double) somatorioDemandas / cargaCaminhao);
     printf(QTD_CAMINHOES, qtdCaminhoes);
 
     // Colocando valores do arquivo em uma matriz simétrica.
